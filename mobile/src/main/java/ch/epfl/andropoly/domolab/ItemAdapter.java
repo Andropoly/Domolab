@@ -1,6 +1,5 @@
 package ch.epfl.andropoly.domolab;
 
-import android.media.Image;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
