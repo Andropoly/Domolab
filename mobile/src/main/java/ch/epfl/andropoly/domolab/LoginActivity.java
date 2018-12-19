@@ -28,8 +28,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.concurrent.Executor;
-
 /**
  * A login screen that offers login via email/password.
  */
@@ -49,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginRegisterTask mAuthTask = null;
-    private FirebaseAuth mAuth;
 
     // UI references.
     private EditText mEmailView;
@@ -210,23 +207,22 @@ public class LoginActivity extends AppCompatActivity {
         private final boolean mSignin;
         private FirebaseUser mUser;
         private boolean mSuccess = false;
+        private FirebaseAuth mAuth;
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
             mPassword = password;
             mSignin = signin;
             mUser = null;
+            mAuth = FirebaseAuth.getInstance();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            mAuth = FirebaseAuth.getInstance();
-            // Simulate network access. fire base implementation
-
-
             if (mSignin == SIGN_IN) {
+
                 signInAccount(mEmail, mPassword);
             }
             else{
@@ -240,44 +236,51 @@ public class LoginActivity extends AppCompatActivity {
 
         private void registerAccount(String email, String password){
             mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
                                 mUser = mAuth.getCurrentUser();
+                                Toast.makeText(LoginActivity.this, "Registration successful.",
+                                        Toast.LENGTH_SHORT).show();
                                 mSuccess = true;
                             } else {
-                                // If sign in fails, display a message to the user.
+                                // If register fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                Toast.makeText(LoginActivity.this, "Registration failed.",
                                         Toast.LENGTH_SHORT).show();
+                                mSuccess = false;
                             }
                         }
                     });
         }
+
         private void signInAccount(String email, String password) {
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
                                 mUser = mAuth.getCurrentUser();
+                                Toast.makeText(LoginActivity.this, "Authentication successful.",
+                                        Toast.LENGTH_SHORT).show();
                                 mSuccess = true;
+
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 Toast.makeText(LoginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
+                                mSuccess = false;
                             }
 
                         }
                     });
         }
-
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
