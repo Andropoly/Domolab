@@ -3,6 +3,7 @@ package ch.epfl.andropoly.domolab;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +12,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
-    private final List<Pair<Object, String>> list_rooms = Arrays.asList(
-            Pair.create(null, "Kitchen"),
-            Pair.create(null, "Room"),
-            Pair.create(null, "Restroom"),
-            Pair.create(null, "Living room")
-    );
+    private final String TAG = this.getClass().getSimpleName();
+    private List<String> list_rooms;
+
+    public ItemAdapter(List<String> coucou){
+        Log.e(TAG, "test");
+
+        if(coucou != null) {
+            list_rooms = coucou;
+
+            Log.e(TAG, "Après");
+        }
+    }
 
     @Override
     public int getItemCount() {
@@ -38,8 +44,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        Pair<Object, String> pair = list_rooms.get(position);
-        holder.display(pair);
+        holder.display(list_rooms.get(position));
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -58,13 +63,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             });
         }
 
-        public void display(Pair<Object, String> pair) {
+        public void display(String room) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 ImageView imgButton = (ImageView) itemView.findViewById(R.id.img_room);
                 TextView txt_room = (TextView) itemView.findViewById(R.id.txt_room);
-                txt_room.setText(pair.second);
+                txt_room.setText(room);
 
-                switch (pair.second) {
+                switch (room) {
                     case ("Kitchen"):
                         imgButton.setImageResource(R.drawable.table);
                         break;

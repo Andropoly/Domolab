@@ -53,7 +53,7 @@
         android:layout_marginBottom="16dp"
         android:gravity="center_vertical|center_horizontal|center"
         android:text="@string/room_name"
-        android:textSize="22sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/btn_room"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
