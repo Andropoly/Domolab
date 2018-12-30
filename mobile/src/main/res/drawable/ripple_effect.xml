@@ -11,13 +11,4 @@
             <corners android:radius="@dimen/button_radius_large" />
         </shape>
     </item>
-
-    <item android:id="@android:id/background">
-        <shape android:shape="rectangle">
-            <gradient
-                android:angle="90"
-                android:type="linear" />
-            <corners android:radius="@dimen/button_radius_large" />
-        </shape>
-    </item>
 </ripple>

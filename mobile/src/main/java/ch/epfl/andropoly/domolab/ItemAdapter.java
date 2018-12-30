@@ -18,14 +18,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     private final String TAG = this.getClass().getSimpleName();
     private List<String> list_rooms;
 
-    public ItemAdapter(List<String> coucou){
-        Log.e(TAG, "test");
-
-        if(coucou != null) {
-            list_rooms = coucou;
-
-            Log.e(TAG, "Après");
-        }
+    ItemAdapter(List<String> list){
+        list_rooms = list;
     }
 
     @Override
@@ -47,11 +41,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         holder.display(list_rooms.get(position));
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
         private final Button roomButton;
-        private Pair<String, String> currentPair;
 
-        public ItemViewHolder(final View itemView) {
+        ItemViewHolder(final View itemView) {
             super(itemView);
             roomButton = (Button) itemView.findViewById(R.id.btn_room);
 
@@ -63,7 +56,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             });
         }
 
-        public void display(String room) {
+        void display(String room) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 ImageView imgButton = (ImageView) itemView.findViewById(R.id.img_room);
                 TextView txt_room = (TextView) itemView.findViewById(R.id.txt_room);

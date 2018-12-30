@@ -3,16 +3,21 @@ package ch.epfl.andropoly.domolab;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.GridView;
+import android.widget.TableLayout;
+
+import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
-    public enum ROOM {LIVING, KITCHEN, BEDROOM}
-    String caca = "caca", prout = "PROUT";
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+public class HomeActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private List<String> list_rooms = Arrays.asList(
@@ -22,9 +27,6 @@ public class HomeActivity extends AppCompatActivity {
     private List<String> list_fav = Arrays.asList(
             "Kitchen","Restroom","Restroom","Restroom"
     );
-
-    //private RecordingAdapter adapter;
-    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,8 @@ public class HomeActivity extends AppCompatActivity {
             //TODO: Save user id
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.list_rooms);
+        //private RecordingAdapter adapter;
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list_rooms);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new ItemAdapter(list_rooms));
@@ -45,5 +48,13 @@ public class HomeActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new ItemAdapter(list_fav));
+
+        int numberOfColumns = 3;
+        SpannedGridLayoutManager spannedGridLayoutManager = new SpannedGridLayoutManager(
+                SpannedGridLayoutManager.Orientation.VERTICAL, numberOfColumns);
+        recyclerView = (RecyclerView) findViewById(R.id.grid_options);
+        recyclerView.setLayoutManager(spannedGridLayoutManager);
+
+        recyclerView.setAdapter(new ItemAdapter(list_rooms));
     }
 }
