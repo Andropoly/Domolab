@@ -37,7 +37,7 @@ public class ListRoomsFragment extends Fragment {
     public ListRoomsFragment() {
         // Required empty public constructor
     }
-    public static ListRoomsFragment newInstance(String param1, String param2) {
+    public static ListRoomsFragment newInstance() {
         ListRoomsFragment fragment = new ListRoomsFragment();
 
         return fragment;

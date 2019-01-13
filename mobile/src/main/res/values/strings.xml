@@ -19,8 +19,6 @@
     <string name="room_name">Room name</string>
     <string name="room_image">Room image</string>
     <string name="background_color_button">background_color_button</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="room_fragment">Room_fragment</string>
+    <string name="home_page">home_page</string>
 </resources>
