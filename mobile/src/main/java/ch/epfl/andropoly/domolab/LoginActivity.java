@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -208,6 +209,7 @@ public class LoginActivity extends AppCompatActivity {
         private FirebaseUser mUser;
         private boolean mSuccess = false;
         private FirebaseAuth mAuth;
+        private boolean mRunningThread = true;
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
@@ -235,6 +237,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         private void registerAccount(String email, String password){
+            mRunningThread = true;
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -246,18 +249,29 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Registration successful.",
                                         Toast.LENGTH_SHORT).show();
                                 mSuccess = true;
+                                mRunningThread = false;
                             } else {
                                 // If register fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                 Toast.makeText(LoginActivity.this, "Registration failed.",
                                         Toast.LENGTH_SHORT).show();
                                 mSuccess = false;
+                                mRunningThread = false;
                             }
                         }
                     });
+
+            while(mRunningThread){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         private void signInAccount(String email, String password) {
+            mRunningThread = true;
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -269,6 +283,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Authentication successful.",
                                         Toast.LENGTH_SHORT).show();
                                 mSuccess = true;
+                                mRunningThread = false;
 
                             } else {
                                 // If sign in fails, display a message to the user.
@@ -276,19 +291,27 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                                 mSuccess = false;
+                                mRunningThread = false;
                             }
 
                         }
                     });
+            while(mRunningThread){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
+            Log.d(TAG, "On post exe");
             if (success) {
                 Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
-
+                Log.d(TAG, "success");
                 //TODO: send user id to the homeactivity
                 startActivity(intentHomeActivity);
             } else {
