@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
-import android.support.annotation.NonNull;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.email);
 
@@ -65,11 +66,11 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLoginRegistration(SIGN_IN);
-                    return true;
-                }
-                return false;
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                attemptLoginRegistration(SIGN_IN);
+                return true;
+            }
+            return false;
             }
         });
 
@@ -201,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
      * the user.
      */
     public class UserLoginRegisterTask extends AsyncTask<Void, Void, Boolean> {
-
         private final String mEmail;
         private final String mPassword;
         private final boolean mSignin;
@@ -287,9 +287,10 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                finish();
+                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
 
-                // TODO: Implement intent to main activity if succes
+                //TODO: send user id to the homeactivity
+                startActivity(intentHomeActivity);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
