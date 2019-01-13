@@ -3,10 +3,6 @@ package ch.epfl.andropoly.domolab;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,12 +23,27 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        HomeFragment homeFragment = HomeFragment.newInstance("Hey", "Hello");
+        ListRoomsFragment listRoomsFragment = ListRoomsFragment.newInstance("Hey", "Hello");
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.list_rooms_fragment, listRoomsFragment)
+                .addToBackStack(null)
+                .commit();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.home_fragment, homeFragment)
+                .addToBackStack(null)
+                .commit();
+
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             //TODO: Save user id
         }
 
-        //private RecordingAdapter adapter;
+        /*//private RecordingAdapter adapter;
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list_rooms);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -51,6 +62,6 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.grid_options);
         recyclerView.setLayoutManager(grid_layout);
 
-        recyclerView.setAdapter(new ItemAdapter(list_rooms, false));
+        recyclerView.setAdapter(new ItemAdapter(list_rooms, false));*/
     }
 }
