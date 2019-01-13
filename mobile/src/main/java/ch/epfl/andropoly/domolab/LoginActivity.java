@@ -28,6 +28,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 
 /**
  * A login screen that offers login via email/password.
@@ -48,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginRegisterTask mAuthTask = null;
+
 
     // UI references.
     private EditText mEmailView;
@@ -93,6 +102,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
     }
 
 
@@ -209,7 +220,11 @@ public class LoginActivity extends AppCompatActivity {
         private FirebaseUser mUser;
         private boolean mSuccess = false;
         private FirebaseAuth mAuth;
+        private FirebaseDatabase database;
+        private DatabaseReference profileGetRef;
+        private DatabaseReference profileRef;
         private boolean mRunningThread = true;
+        private String profileKey;
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
@@ -217,6 +232,8 @@ public class LoginActivity extends AppCompatActivity {
             mSignin = signin;
             mUser = null;
             mAuth = FirebaseAuth.getInstance();
+            database = FirebaseDatabase.getInstance();
+            profileGetRef = database.getReference("profiles");
         }
 
         @Override
@@ -248,6 +265,11 @@ public class LoginActivity extends AppCompatActivity {
                                 mUser = mAuth.getCurrentUser();
                                 Toast.makeText(LoginActivity.this, "Registration successful.",
                                         Toast.LENGTH_SHORT).show();
+
+                                profileRef = profileGetRef.push();
+                                addProfileToFirebaseDB();
+                                profileKey = profileRef.getKey();
+
                                 mSuccess = true;
                                 mRunningThread = false;
                             } else {
@@ -282,8 +304,42 @@ public class LoginActivity extends AppCompatActivity {
                                 mUser = mAuth.getCurrentUser();
                                 Toast.makeText(LoginActivity.this, "Authentication successful.",
                                         Toast.LENGTH_SHORT).show();
+
+                                profileGetRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        boolean notFoundProfile = true;
+                                        Log.d(TAG, "start looking for profiles");
+                                        for (final DataSnapshot profile : dataSnapshot.getChildren()) {
+                                            String userIdDatabase = profile.child("userID").getValue(String.class);
+                                            Log.d(TAG, "found a userID");
+
+                                            if (mUser.getUid().equals(userIdDatabase)) {
+                                                Log.d(TAG, "same userID as connected user");
+                                                notFoundProfile = false;
+                                                profileKey = profile.getKey();
+                                                break;
+                                            }
+                                        }
+                                        if (notFoundProfile) {
+                                            // What to do if new user (nothing in the database)
+                                            Log.d(TAG, "No corresponding profile in the database");
+                                            profileRef = profileGetRef.push();
+                                            addProfileToFirebaseDB();
+                                            profileKey = profileRef.getKey();
+                                        }
+
+                                        mRunningThread = false;
+
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        mRunningThread = false;
+                                    }
+
+                                });
+
                                 mSuccess = true;
-                                mRunningThread = false;
 
                             } else {
                                 // If sign in fails, display a message to the user.
@@ -312,7 +368,11 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
                 Log.d(TAG, "success");
-                //TODO: send user id to the homeactivity
+                String userID = mUser.getUid();
+                Log.d(TAG, "user ID:" + userID);
+                Log.d(TAG, "profile key:" + profileKey);
+                intentHomeActivity.putExtra("PROFILEKEY", profileKey);
+                //intentHomeActivity.putExtra("USERID", userID);
                 startActivity(intentHomeActivity);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -325,9 +385,24 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+
+        private void addProfileToFirebaseDB() {
+            profileRef.runTransaction( new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                    mutableData.child("HomeName").setValue("DefaultName");
+                    mutableData.child("userID").setValue(mUser.getUid());
+                    return Transaction.success(mutableData);
+                }
+                @Override
+                public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                {
+                }
+            });
+        }
+
     }
 }
-
-
 
 
