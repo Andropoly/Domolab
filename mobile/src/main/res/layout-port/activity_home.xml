@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".HomeActivity"
+    tools:ignore="MissingDefaultResource">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/txt_rooms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacer"
+            android:layout_marginLeft="@dimen/spacer"
+            android:layout_marginTop="@dimen/spacer"
+            android:layout_marginEnd="@dimen/spacer"
+            android:layout_marginRight="@dimen/spacer"
+            android:layout_marginBottom="@dimen/spacer"
+            android:text="@string/home_rooms"
+            android:textSize="@dimen/txt_title"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/list_rooms"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_rooms"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/spacer"
+            android:layout_marginLeft="@dimen/spacer"
+            android:layout_marginEnd="@dimen/spacer"
+            android:layout_marginRight="@dimen/spacer"
+            android:layout_marginBottom="@dimen/spacer"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/txt_favorites_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_rooms" />
+
+        <TextView
+            android:id="@+id/txt_favorites_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacer"
+            android:layout_marginLeft="@dimen/spacer"
+            android:layout_marginTop="@dimen/spacer"
+            android:layout_marginEnd="@dimen/spacer"
+            android:layout_marginRight="@dimen/spacer"
+            android:layout_marginBottom="@dimen/spacer"
+            android:text="@string/home_favorites"
+            android:textSize="@dimen/txt_title"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/list_favorites"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/list_rooms" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_favorites"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/spacer"
+            android:layout_marginLeft="@dimen/spacer"
+            android:layout_marginEnd="@dimen/spacer"
+            android:layout_marginRight="@dimen/spacer"
+            android:layout_marginBottom="@dimen/spacer"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_favorites_title" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/grid_options"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/spacer"
+            android:layout_marginLeft="@dimen/spacer"
+            android:layout_marginTop="@dimen/spacer"
+            android:layout_marginEnd="@dimen/spacer"
+            android:layout_marginRight="@dimen/spacer"
+            android:layout_marginBottom="@dimen/spacer"
+            android:maxHeight="200dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>
