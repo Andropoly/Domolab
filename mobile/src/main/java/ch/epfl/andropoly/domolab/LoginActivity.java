@@ -38,9 +38,7 @@ public class LoginActivity extends AppCompatActivity {
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+
     private static final boolean SIGN_IN = true;
     private static final boolean REGISTER = false;
     private static final String TAG = "LoginActivity";
@@ -310,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
             Log.d(TAG, "On post exe");
             if (success) {
-                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
+                Intent intentHomeActivity = new Intent(LoginActivity.this, Tes2Activity.class);
                 Log.d(TAG, "success");
                 //TODO: send user id to the homeactivity
                 startActivity(intentHomeActivity);
