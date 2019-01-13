@@ -3,8 +3,6 @@ package ch.epfl.andropoly.domolab;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,33 +14,41 @@ import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
     private final String TAG = this.getClass().getSimpleName();
-    private List<String> list_rooms;
+    private List<String> list_item;
+    private boolean square;
 
-    ItemAdapter(List<String> list){
-        list_rooms = list;
+    ItemAdapter(List<String> list, boolean ratio){
+        list_item = list;
+        square = ratio;
     }
 
     @Override
     public int getItemCount() {
-        return list_rooms.size();
+        return list_item.size();
     }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_layout, parent, false);
+        View view;
+
+        if(square)
+            view = inflater.inflate(R.layout.item_height_layout, parent, false);
+        else
+            view = inflater.inflate(R.layout.item_width_layout, parent, false);
 
         return new ItemViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        holder.display(list_rooms.get(position));
+        holder.display(list_item.get(position));
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
         private final Button roomButton;
+
 
         ItemViewHolder(final View itemView) {
             super(itemView);
@@ -56,13 +62,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             });
         }
 
-        void display(String room) {
+        void display(String item) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 ImageView imgButton = (ImageView) itemView.findViewById(R.id.img_room);
                 TextView txt_room = (TextView) itemView.findViewById(R.id.txt_room);
-                txt_room.setText(room);
+                txt_room.setText(item);
 
-                switch (room) {
+                switch (item) {
                     case ("Kitchen"):
                         imgButton.setImageResource(R.drawable.table);
                         break;

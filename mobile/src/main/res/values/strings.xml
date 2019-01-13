@@ -18,4 +18,5 @@
     <string name="item_button">item_hint</string>
     <string name="room_name">Room name</string>
     <string name="room_image">Room image</string>
+    <string name="background_color_button">background_color_button</string>
 </resources>
