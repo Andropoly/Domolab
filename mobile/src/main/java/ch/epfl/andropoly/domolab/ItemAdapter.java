@@ -1,7 +1,11 @@
 package ch.epfl.andropoly.domolab;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
     private final String TAG = this.getClass().getSimpleName();
@@ -32,9 +37,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view;
 
-        view = inflater.inflate(R.layout.item_layout, parent, false);
+        View view = inflater.inflate(R.layout.item_layout, parent, false);
 
         return new ItemViewHolder(view);
     }
@@ -56,18 +60,20 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
                 @Override
                 public void onClick(View view) {
                     TextView txt_room = (TextView) itemView.findViewById(R.id.txt_room);
-                    Log.e(TAG, String.valueOf(txt_room));
 
-                    if(txt_room.getText().equals("Kitchen")) {
-                        RoomFragment roomFragment = RoomFragment.newInstance(txt_room.getText().toString());
-                        AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
+                    // Check if the fragment is already set to not setting it twice
+                    AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
 
-                        activity.getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.home_fragment, roomFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
+                    RoomFragment roomFragment = RoomFragment.newInstance(txt_room.getText().toString());
+
+                    if(activity.getSupportFragmentManager().getBackStackEntryCount() != 0)
+                        activity.getSupportFragmentManager().popBackStack();
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.home_fragment, roomFragment)
+                            .addToBackStack(null)
+                            .commit();
                 }
             });
         }
