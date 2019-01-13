@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +21,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * A login screen that offers login via email/password.
@@ -34,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     };
     private static final boolean SIGN_IN = true;
     private static final boolean REGISTER = false;
-
+    private static final String TAG = "LoginActivity";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -197,48 +206,112 @@ public class LoginActivity extends AppCompatActivity {
         private final String mEmail;
         private final String mPassword;
         private final boolean mSignin;
+        private FirebaseUser mUser;
+        private boolean mSuccess = false;
+        private FirebaseAuth mAuth;
+        private boolean mRunningThread = true;
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
             mPassword = password;
             mSignin = signin;
+            mUser = null;
+            mAuth = FirebaseAuth.getInstance();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access. fire base implementation
-
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
             if (mSignin == SIGN_IN) {
-                for (String credential : DUMMY_CREDENTIALS) {
-                    String[] pieces = credential.split(":");
-                    if (pieces[0].equals(mEmail)) {
-                        // Account exists, return true if the password matches.
-                        return pieces[1].equals(mPassword);
-                    }
-                }
-            } else {
+
+                signInAccount(mEmail, mPassword);
+            }
+            else{
+                registerAccount(mEmail, mPassword);
                 //register to database
             }
 
-            return false;
+            return mSuccess;
         }
 
+
+        private void registerAccount(String email, String password){
+            mRunningThread = true;
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "createUserWithEmail:success");
+                                mUser = mAuth.getCurrentUser();
+                                Toast.makeText(LoginActivity.this, "Registration successful.",
+                                        Toast.LENGTH_SHORT).show();
+                                mSuccess = true;
+                                mRunningThread = false;
+                            } else {
+                                // If register fails, display a message to the user.
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Toast.makeText(LoginActivity.this, "Registration failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                mSuccess = false;
+                                mRunningThread = false;
+                            }
+                        }
+                    });
+
+            while(mRunningThread){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void signInAccount(String email, String password) {
+            mRunningThread = true;
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "signInWithEmail:success");
+                                mUser = mAuth.getCurrentUser();
+                                Toast.makeText(LoginActivity.this, "Authentication successful.",
+                                        Toast.LENGTH_SHORT).show();
+                                mSuccess = true;
+                                mRunningThread = false;
+
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                mSuccess = false;
+                                mRunningThread = false;
+                            }
+
+                        }
+                    });
+            while(mRunningThread){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
+            Log.d(TAG, "On post exe");
             if (success) {
                 Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
-
+                Log.d(TAG, "success");
                 //TODO: send user id to the homeactivity
                 startActivity(intentHomeActivity);
             } else {
@@ -254,4 +327,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
+
+
+
 
