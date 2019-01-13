@@ -1,19 +1,12 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.view.Display;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-
-import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,15 +51,6 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.grid_options);
         recyclerView.setLayoutManager(grid_layout);
 
-        /*ConstraintLayout.LayoutParams params = new
-                ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        // Set the height by params
-        params.height=200;
-
-        // set height of RecyclerView
-        holder.setLayoutParams(params);
-*/
         recyclerView.setAdapter(new ItemAdapter(list_rooms, false));
     }
 }
