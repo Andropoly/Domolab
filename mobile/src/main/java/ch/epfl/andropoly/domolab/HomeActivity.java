@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,12 +41,30 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        HomeFragment homeFragment = HomeFragment.newInstance("Hey", "Hello");
+        ListRoomsFragment listRoomsFragment = ListRoomsFragment.newInstance();
+        String fragmentTAG = getResources().getString(R.string.home_page);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTAG);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.list_rooms_fragment, listRoomsFragment)
+                .commit();
+
+        if(fragment == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.home_fragment, homeFragment, fragmentTAG)
+                    .commit();
+        }
+
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             userID = intent.getExtras().getString("USERID");
             profileKey = intent.getExtras().getString("PROFILEKEY");
         }
-
+    
         database = FirebaseDatabase.getInstance();
         profileRef = database.getReference("profiles");
         profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
@@ -61,35 +80,18 @@ public class HomeActivity extends AppCompatActivity {
                 // Empty
             }
         });
-
-        //private RecordingAdapter adapter;
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list_rooms);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new ItemAdapter(list_rooms, true));
-
-        recyclerView = (RecyclerView) findViewById(R.id.list_favorites);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new ItemAdapter(list_fav, true));
-
-        Log.e(TAG, Integer.toString(recyclerView.getHeight()));
-
-        int numberOfColumns = 2;
-        StaggeredGridLayoutManager grid_layout = new StaggeredGridLayoutManager(numberOfColumns,
-                StaggeredGridLayoutManager.VERTICAL);
-        recyclerView = (RecyclerView) findViewById(R.id.grid_options);
-        recyclerView.setLayoutManager(grid_layout);
-
-        recyclerView.setAdapter(new ItemAdapter(list_rooms, false));
-
-
-
     }
 
     private void setLayoutWithDatabase(String homename, String userid) {
         Toast.makeText(HomeActivity.this, "Welcome to your home: " + homename + " !",
                 Toast.LENGTH_LONG).show();
         Log.d(TAG, "Welcome to your home: " + homename + " !");
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO: When HomeFragment is active, propose to logout instead of doing nothing
+        if(this.getSupportFragmentManager().getBackStackEntryCount() != 0)
+            super.onBackPressed();
     }
 }
