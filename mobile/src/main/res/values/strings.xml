@@ -19,6 +19,10 @@
     <string name="room_name">Room name</string>
     <string name="room_image">Room image</string>
     <string name="background_color_button">background_color_button</string>
+
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_tes2">Tes2Activity</string>
+  
+    <string name="room_fragment">Room_fragment</string>
+    <string name="home_page">home_page</string>
 </resources>
