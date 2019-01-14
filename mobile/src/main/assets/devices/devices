@@ -1,0 +1,38 @@
+{
+  "1": {
+    "Type": "Light",
+    "Icon": "Light",
+    "Inputs": {
+      "1": {
+        "Type": "Toggle",
+        "Text": "Switch"
+      },
+      "2": {
+        "Type": "Slider",
+        "Text": "Brightness"
+      },
+      "3": {
+        "Type": "Slider_RGB",
+        "Text": "RGB"
+      }
+    },
+    "Outputs": {
+    }
+  },
+  "2": {
+    "Type": "Radiator",
+    "Icon": "Radiator",
+    "Inputs": {
+      "1": {
+        "Type": "Toggle",
+        "Text": "Switch"
+      },
+      "2": {
+        "Type": "Slider",
+        "Text": "Brightness"
+      }
+    },
+    "Outputs": {
+    }
+  }
+}

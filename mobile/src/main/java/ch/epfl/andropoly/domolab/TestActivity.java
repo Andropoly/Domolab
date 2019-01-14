@@ -1,96 +1,60 @@
 package ch.epfl.andropoly.domolab;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-
+import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
 public class TestActivity extends AppCompatActivity {
-
-    private static final String TAG = "TestActivity";
-
-    private String mUsername = "ywcheuja";
-    private String mPwd = "XD9nWtB5CRKl";
-    private MqttConnectOptions mOptions = new MqttConnectOptions();
+    MqttDomolab mqttDomolab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_test2);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        mOptions.setUserName(mUsername);
-        mOptions.setPassword(mPwd.toCharArray());
-        mOptions.setCleanSession(true);
+        mqttDomolab =Domolab.getMqttDomolab();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
-        String clientId = MqttClient.generateClientId();
-        final MqttAndroidClient client =
-                new MqttAndroidClient(Domolab.getContext(), "tcp://m21.cloudmqtt.com:16233",
-                        clientId);
-
-        try {
-            IMqttToken token = client.connect(mOptions);
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    // We are connected
-                    Toast.makeText(Domolab.getContext(), "Successfully connected to the MQTT Broker",
-                            Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    Toast.makeText(Domolab.getContext(), "Failed to connect to the MQTT Broker",
-                            Toast.LENGTH_SHORT).show();
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-
-
-        Button button = (Button) findViewById(R.id.button2);
+        Button button = findViewById(R.id.testButton);
         button.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                String topic = "test";
-                String payload = "the payload";
-                byte[] encodedPayload = new byte[0];
-                try {
-                    IMqttToken token = client.connect();
-                    encodedPayload = payload.getBytes("UTF-8");
-                    MqttMessage message = new MqttMessage(encodedPayload);
-                    client.publish(topic, message);
-                } catch (UnsupportedEncodingException | MqttException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    client.disconnect();
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-                Intent intent = new Intent(TestActivity.this, Tes2Activity.class);
-                startActivity(intent);
+                JSONObject obj = new JSONObject();
 
+                try {
+                    obj.put("434343",3.2);
+                    obj.put("3434343",3.2);
+                    mqttDomolab.sendJSONToTopic(obj,"test");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (NotConnectedException e) {
+                    e.printStackTrace();
+                    Toast.makeText(Domolab.getContext(), "Not connected",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
 }
-
-

@@ -11,10 +11,13 @@ import android.widget.Button;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 
 import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
 public class Tes2Activity extends AppCompatActivity {
     MqttDomolab mqttDomolab;
@@ -30,15 +33,26 @@ public class Tes2Activity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mqttDomolab = new MqttDomolab(getApplicationContext(), mUsername, mPwd, mServerAddr);
+        Domolab.creatAndConnectMqtt( mUsername, mPwd, mServerAddr);
+        mqttDomolab =Domolab.getMqttDomolab();
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                JSONObject obj = new JSONObject();
 
-                mqttDomolab.sendMsgToTopic("test button","test");
+                try {
+                    obj.put("1",3.2);
+                    obj.put("2",3.2);
+                    mqttDomolab.sendJSONToTopic(obj,"test");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (NotConnectedException e) {
+                    e.printStackTrace();
+                }
+                mqttDomolab.disconnect();
                 Intent intent = new Intent(Tes2Activity.this, TestActivity.class);
-                intent.putExtra("mqttclient", (Serializable) mqttDomolab);
+                //intent.putExtra("mqttclient", mqttDomolab);
                 startActivity(intent);
             }
         });
@@ -60,7 +74,6 @@ public class Tes2Activity extends AppCompatActivity {
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 Log.w("Debug",mqttMessage.toString());
-                mqttDomolab.sendMsgToTopic("test","test");
             }
 
             @Override
