@@ -43,8 +43,11 @@ public class Tes2Activity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 JSONObject obj = null;
+                JSONObject obj2 = null;
                 try {
-                    obj = myJsonReader.jsonFromFile( Tes2Activity.this,"test.json");
+                    obj = myJsonReader.jsonFromFileAsset( Tes2Activity.this,"test.json");
+                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"coucou.json", obj);
+                    obj2 = myJsonReader.jsonFromFileInternal( Tes2Activity.this,"coucou.json");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -52,7 +55,7 @@ public class Tes2Activity extends AppCompatActivity {
                 }
 
                 try {
-                    mqttDomolab.sendJSONToTopic(obj,"test");
+                    mqttDomolab.sendJSONToTopic(obj2,"test");
                 } catch (NotConnectedException e) {
                     e.printStackTrace();
                 }
