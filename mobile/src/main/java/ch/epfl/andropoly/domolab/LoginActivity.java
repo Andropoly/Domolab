@@ -54,11 +54,6 @@ import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-
     private static final boolean SIGN_IN = true;
     private static final boolean REGISTER = false;
     private static final String TAG = "-----LoginActivity-----";
@@ -101,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d(TAG, "look for saved credentials");
 
+        // looks for existing JSON with saved credentials
         try {
             savedCredentials = true;
             JSONCredential = jsonObjFromFileInternal(LoginActivity.this, "savedCredentials.json");
@@ -112,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // if JSON was found, completes the login form automatically
         if(savedCredentials) {
             Log.d(TAG, "found saved credentials");
             try {
@@ -198,15 +195,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
-
+    // conditions for a valid email
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
+    // conditions for a valid password
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -265,7 +260,6 @@ public class LoginActivity extends AppCompatActivity {
         private String profileKey;
         private ValueEventListener listener;
 
-
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
             mPassword = password;
@@ -278,7 +272,6 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
             if (mSignin == SIGN_IN) {
 
@@ -286,14 +279,13 @@ public class LoginActivity extends AppCompatActivity {
             }
             else{
                 registerAccount(mEmail, mPassword);
-                //register to database
             }
 
             return mSuccess;
         }
 
-
         private void registerAccount(String email, String password){
+            // used for waiting until the listener has been completed
             mRunningThread = true;
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -306,6 +298,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Registration successful.",
                                         Toast.LENGTH_SHORT).show();
 
+                                // creates a new profile in the database for the newly registered user
                                 profileRef = profileGetRef.push();
                                 addProfileToFirebaseDB();
                                 profileKey = profileRef.getKey();
@@ -323,6 +316,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
 
+            // waits for completing the listener
             while(mRunningThread){
                 try {
                     Thread.sleep(20);
@@ -333,33 +327,37 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         private void signInAccount(String email, String password) {
+            // used for waiting until the listener has been completed
             mRunningThread = true;
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
+                                // Sign in success
                                 Log.d(TAG, "signInWithEmail:success");
                                 mUser = mAuth.getCurrentUser();
                                 Toast.makeText(LoginActivity.this, "Authentication successful.",
                                         Toast.LENGTH_SHORT).show();
 
+                                // looks for the profile in the database corresponding to the user signing in
                                 listener = profileGetRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         boolean notFoundProfile = true;
 
                                         Log.d(TAG, "start looking for profiles");
+                                        // for-loop over all existing profiles
                                         for (final DataSnapshot profile : dataSnapshot.getChildren()) {
                                             String userIdDatabase = profile.child("userID").getValue(String.class);
-                                            Log.d(TAG, "found a userID");
 
+                                            // checks if the id of the user currently signing in and the user id of the profile are the same
                                             if (mUser.getUid().equals(userIdDatabase)) {
                                                 Log.d(TAG, "same userID as connected user");
                                                 notFoundProfile = false;
                                                 profileKey = profile.getKey();
 
+                                                // checks if some settings for mqtt are missing
                                                 String HomeNameDatabse = profile.child("HomeName").getValue(String.class);
                                                 String usernameMQTTDatabse = profile.child("MQTT").child("username").getValue(String.class);
                                                 String passwordMQTTDatabse = profile.child("MQTT").child("password").getValue(String.class);
@@ -372,6 +370,8 @@ public class LoginActivity extends AppCompatActivity {
                                                 break;
                                             }
                                         }
+
+                                        // if no profiles corresponding to the signing in user then creates a new profile for this user
                                         if (notFoundProfile) {
                                             // What to do if new user (nothing in the database)
                                             Log.d(TAG, "No corresponding profile in the database");
@@ -403,6 +403,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         }
                     });
+            // waits for completing the listener
             while(mRunningThread){
                 try {
                     Thread.sleep(20);
@@ -417,17 +418,22 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent;
 
             Log.d(TAG, "On post exe");
+            // if user correctly signed in
             if (success) {
+                // removes the listener on firebase database
                 profileGetRef.removeEventListener(listener);
 
+                // if some mqtt settings were missing, start the settings activity to set them
                 if (needSettings) {
                     intent = new Intent(LoginActivity.this, MqttSettingsActivity.class);
                 }
+
+                // else starts directly the home activity
                 else {
                     intent = new Intent(LoginActivity.this, HomeActivity.class);
                 }
 
-
+                // saves the credentials of the user in a JSON file in order to "stay connected" after closing the app
                 try {
                     JSONCredential.put("email", mEmail);
                     JSONCredential.put("password", mPassword);
@@ -436,10 +442,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
+
+                // shares the userID and the proper profile key with the called activity
                 intent.putExtra("PROFILEKEY", profileKey);
                 intent.putExtra("USERID", mUser.getUid());
                 showProgress(false);
                 startActivity(intent);
+
+            // if the user didn't signed in properly
             } else {
                 showProgress(false);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -453,11 +463,14 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
 
+        // adds all the necessary information to the new profile of the database
         private void addProfileToFirebaseDB() {
             /*final ArrayList<String> emptyListRoom = new ArrayList<>();
             emptyListRoom.add("Room");
             final ArrayList<String> emptyListFav = new ArrayList<>();
             emptyListFav.add("Kitchen");*/
+
+            // JSON object representing one room
             final JSONObject objRoom = new JSONObject();
             try {
                 objRoom.put("Type", "Room");
@@ -465,6 +478,8 @@ public class LoginActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            // JSON arrays containing several room objects
             final JSONArray roomsArray = new JSONArray();
             final JSONArray favsArray = new JSONArray();
             roomsArray.put(objRoom);
@@ -473,6 +488,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "Rooms array init: " + roomsArray);
             Log.d(TAG, "Favs array init: " + favsArray);
 
+            // adds the default data in the database
             profileRef.runTransaction( new Transaction.Handler() {
                 @NonNull
                 @Override
