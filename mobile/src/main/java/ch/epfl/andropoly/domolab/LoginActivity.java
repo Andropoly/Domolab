@@ -73,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private boolean needSettings = true;
 
     // keep user credentials between two connections
     private JSONObject JSONCredential = new JSONObject();
@@ -348,6 +349,7 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         boolean notFoundProfile = true;
+
                                         Log.d(TAG, "start looking for profiles");
                                         for (final DataSnapshot profile : dataSnapshot.getChildren()) {
                                             String userIdDatabase = profile.child("userID").getValue(String.class);
@@ -357,6 +359,16 @@ public class LoginActivity extends AppCompatActivity {
                                                 Log.d(TAG, "same userID as connected user");
                                                 notFoundProfile = false;
                                                 profileKey = profile.getKey();
+
+                                                String HomeNameDatabse = profile.child("HomeName").getValue(String.class);
+                                                String usernameMQTTDatabse = profile.child("MQTT").child("username").getValue(String.class);
+                                                String passwordMQTTDatabse = profile.child("MQTT").child("password").getValue(String.class);
+                                                String serverURIMQTTDatabse = profile.child("MQTT").child("serverURI").getValue(String.class);
+
+                                                if(!(HomeNameDatabse.equals("TBD") || usernameMQTTDatabse.equals("TBD") || passwordMQTTDatabse.equals("TBD") || serverURIMQTTDatabse.equals("TBD"))) {
+                                                    needSettings = false;
+                                                }
+
                                                 break;
                                             }
                                         }
@@ -402,11 +414,19 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
+            Intent intent;
 
             Log.d(TAG, "On post exe");
             if (success) {
                 profileGetRef.removeEventListener(listener);
-                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
+
+                if (needSettings) {
+                    intent = new Intent(LoginActivity.this, MqttSettingsActivity.class);
+                }
+                else {
+                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                }
+
 
                 try {
                     JSONCredential.put("email", mEmail);
@@ -416,10 +436,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
-                intentHomeActivity.putExtra("PROFILEKEY", profileKey);
+                intent.putExtra("PROFILEKEY", profileKey);
                 showProgress(false);
-                //intentHomeActivity.putExtra("USERID", userID);
-                startActivity(intentHomeActivity);
+                intent.putExtra("USERID", mUser.getUid());
+                startActivity(intent);
             } else {
                 showProgress(false);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -457,15 +477,15 @@ public class LoginActivity extends AppCompatActivity {
                 @NonNull
                 @Override
                 public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                    mutableData.child("HomeName").setValue("DefaultName");
+                    mutableData.child("HomeName").setValue("TBD");
                     mutableData.child("userID").setValue(mUser.getUid());
                     //mutableData.child("listOfRooms").setValue(emptyListRoom);
                     //mutableData.child("listOfFav").setValue(emptyListFav);
                     mutableData.child("Rooms").setValue(roomsArray.toString());
                     mutableData.child("Favorites").setValue(favsArray.toString());
-                    mutableData.child("MQTT").child("username").setValue("");
-                    mutableData.child("MQTT").child("password").setValue("");
-                    mutableData.child("MQTT").child("serverURL").setValue("");
+                    mutableData.child("MQTT").child("username").setValue("TBD");
+                    mutableData.child("MQTT").child("password").setValue("TBD");
+                    mutableData.child("MQTT").child("serverURI").setValue("TBD");
                     return Transaction.success(mutableData);
                 }
                 @Override

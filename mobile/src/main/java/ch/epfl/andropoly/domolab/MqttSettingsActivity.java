@@ -2,6 +2,7 @@ package ch.epfl.andropoly.domolab;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.annotations.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +34,13 @@ public class MqttSettingsActivity extends AppCompatActivity {
     private EditText mServer;
     private EditText mUsername;
     private EditText mPassword;
+
+    private String userID;
+    private String profileKey;
+    private FirebaseDatabase database;
+    private DatabaseReference profileGetRef;
+    private DatabaseReference profileRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,59 +51,84 @@ public class MqttSettingsActivity extends AppCompatActivity {
         Button saveButton = (Button)findViewById(R.id.saveSettingsButton);
         Button cancelButton = (Button)findViewById(R.id.cancelSettingButton);
 
+        Intent intent = getIntent();
+        if (intent.getExtras() != null) {
+            userID = intent.getExtras().getString("USERID");
+            profileKey = intent.getExtras().getString("PROFILEKEY");
 
+            database = FirebaseDatabase.getInstance();
+            profileGetRef = database.getReference("profiles");
+            profileRef = profileGetRef.child(profileKey);
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /**
-                 * On save clicked, the value of the text are stored into a json file for further used.
-                 */
+            saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /**
+                     * On save clicked, the value of the text are stored into a json file for further used.
+                     */
 
-                mHouse = (EditText) findViewById(R.id.houseTextEdit);
-                mServer = (EditText)findViewById(R.id.mqttServerTextEdit);
-                mUsername = (EditText)findViewById(R.id.mqttUsernameTextEdit);
-                mPassword = (EditText) findViewById(R.id.houseTextEdit);
+                    mHouse = (EditText) findViewById(R.id.houseTextEdit);
+                    mServer = (EditText) findViewById(R.id.mqttServerTextEdit);
+                    mUsername = (EditText) findViewById(R.id.mqttUsernameTextEdit);
+                    mPassword = (EditText) findViewById(R.id.mqttPasswordTextEdit);
 
-                JSONObject obj1 = new JSONObject();
-                JSONObject obj2 = new JSONObject();
+                    JSONObject obj1 = new JSONObject();
+                    JSONObject obj2 = new JSONObject();
 
-                mHouseName = mHouse.getText().toString();
-                mMqttServerURI = mServer.getText().toString();
-                mMqttUsername = mUsername.getText().toString();
-                mMqttPassword = mPassword.getText().toString();
+                    mHouseName = mHouse.getText().toString();
+                    mMqttServerURI = mServer.getText().toString();
+                    mMqttUsername = mUsername.getText().toString();
+                    mMqttPassword = mPassword.getText().toString();
 
-                boolean cancel = false;
-                View focusView = null;
+                    View focusView = null;
 
-                if(isServerURIValid(mMqttServerURI)){
+                    if (isServerURIValid(mMqttServerURI)) {
 
-                    try {
-                        obj1.put("HouseName", mHouseName);
-                        obj2.put("MQTTServer",mMqttServerURI);
-                        obj2.put("MQTTUsername",mMqttUsername);
-                        obj2.put("MQTTPassword",mMqttPassword);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        try {
+                            obj1.put("HouseName", mHouseName);
+                            obj2.put("MQTTServer", mMqttServerURI);
+                            obj2.put("MQTTUsername", mMqttUsername);
+                            obj2.put("MQTTPassword", mMqttPassword);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
+                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
+
+                        profileRef.runTransaction( new Transaction.Handler() {
+                            @NonNull
+                            @Override
+                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                mutableData.child("HomeName").setValue(mHouseName);
+                                mutableData.child("MQTT").child("username").setValue(mMqttUsername);
+                                mutableData.child("MQTT").child("password").setValue(mMqttPassword);
+                                mutableData.child("MQTT").child("serverURI").setValue(mMqttServerURI);
+                                return Transaction.success(mutableData);
+                            }
+                            @Override
+                            public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                            {
+                                Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
+                                intent.putExtra("USERID", userID);
+                                intent.putExtra("PROFILEKEY", profileKey);
+                                startActivity(intent);
+                            }
+                        });
+                    } else {
+                        mServer.setError("Your server address is missing :");
+                        focusView = mServer;
+                        focusView.requestFocus();
+
                     }
-                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
-                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
-
-                    Intent intent = new Intent(MqttSettingsActivity.this, Tes2Activity.class);
-                    startActivity(intent);
-                }else{
-                    mServer.setError("Your server address is missing :");
-                    focusView = mServer;
-                    focusView.requestFocus();
-
                 }
-            }
-        });
+            });
+        }
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MqttSettingsActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
     }

@@ -49,6 +49,7 @@ public class HomeActivity extends AppCompatActivity {
     // Databse variable
     private String userID;
     private String profileKey;
+    private DatabaseReference profileGetRef;
     private DatabaseReference profileRef;
     private FirebaseDatabase database;
 
@@ -91,35 +92,39 @@ public class HomeActivity extends AppCompatActivity {
         if (intent.getExtras() != null) {
             userID = intent.getExtras().getString("USERID");
             profileKey = intent.getExtras().getString("PROFILEKEY");
-        }
-    
-        database = FirebaseDatabase.getInstance();
-        profileRef = database.getReference("profiles");
-        profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                homename_db = dataSnapshot.child("HomeName").getValue(String.class);
-                userID_db = dataSnapshot.child("userID").getValue(String.class);
-                //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
-                //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
-                roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
-                favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
 
-                try {
-                    roomsArray_db = new JSONArray(roomsString_db);
-                    favsArray_db = new JSONArray(favsString_db);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+            database = FirebaseDatabase.getInstance();
+            //profileGetRef = database.getReference("profiles");
+            //profileRef = profileGetRef.child(profileKey).getRef();
+            profileRef = database.getReference("profiles");
+            profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    homename_db = dataSnapshot.child("HomeName").getValue(String.class);
+                    userID_db = dataSnapshot.child("userID").getValue(String.class);
+                    //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
+                    //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
+                    roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
+                    favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
+                    String adduselessline = "1";
+
+                    try {
+                        roomsArray_db = new JSONArray(roomsString_db);
+                        favsArray_db = new JSONArray(favsString_db);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    setLayoutWithDatabase();
                 }
 
-                setLayoutWithDatabase();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Empty
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Empty
+                }
+            });
+        }
 
     }
 
@@ -135,16 +140,16 @@ public class HomeActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.NeedHelpId:
-                Toast.makeText(HomeActivity.this, "Really Nigga -_- you need help for that ?", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Really Nigga -_- you need help for that ?", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.AddRoomId:
-                Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.AddFavId:
-                Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.AboutUsId:
-                Toast.makeText(HomeActivity.this, "We are the JAVA gods", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "We are the JAVA gods", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.LogOutId:
                 logOut();
