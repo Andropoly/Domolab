@@ -93,26 +93,31 @@ public class HomeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
+            // used for accessing the proper profile in the database
             userID = intent.getExtras().getString("USERID");
             profileKey = intent.getExtras().getString("PROFILEKEY");
 
-
+            // gets the proper references for accessing the profile
             database = FirebaseDatabase.getInstance();
             profileGetRef = database.getReference("profiles");
             profileRef = profileGetRef.child(profileKey).getRef();
             //profileRef = database.getReference("profiles");
             //profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
+
+            // gathers the data contained in the profile in the database
             profileRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     homename_db = dataSnapshot.child("HomeName").getValue(String.class);
                     userID_db = dataSnapshot.child("userID").getValue(String.class);
+
                     String mqttUsername = dataSnapshot.child("MQTT").child("username").getValue(String.class);
                     String mqttPassword = dataSnapshot.child("MQTT").child("password").getValue(String.class);
                     String mqttServer = dataSnapshot.child("MQTT").child("serverURI").getValue(String.class);
                     mqttSettings_db.add(mqttUsername);
                     mqttSettings_db.add(mqttPassword);
                     mqttSettings_db.add(mqttServer);
+
                     //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
                     //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
                     roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
@@ -125,6 +130,7 @@ public class HomeActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
+                    // sets the layout with regard to the gathered data
                     setLayoutWithDatabase();
                 }
 
@@ -179,7 +185,10 @@ public class HomeActivity extends AppCompatActivity {
     private void logOut() {
         JSONObject JSONCredentials = new JSONObject();
 
+        // deletes the saved credentials
         myJsonReader.jsonWriteFileInternal(HomeActivity.this, "savedCredentials.json", JSONCredentials);
+
+        // goes back to the loginActivity
         Intent LogoutIntent = new Intent(HomeActivity.this, LoginActivity.class);
         startActivity(LogoutIntent);
     }
