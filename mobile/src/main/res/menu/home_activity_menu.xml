@@ -21,6 +21,11 @@
         android:title="@string/menu_need_help"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/SettingsId"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/menu_settings"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/AboutUsId"
         android:title="@string/menu_about_us">
     </item>
