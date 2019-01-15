@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,7 @@ import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
 
 public class HomeActivity extends AppCompatActivity {
     private final String TAG = "------" + this.getClass().getSimpleName() + "------";
+    private final int SETTINGS = 1;
 
     private List<String> list_rooms = Arrays.asList(
             "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
@@ -56,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     //private GenericTypeIndicator<ArrayList<String>> ArrayListStringType = new GenericTypeIndicator<ArrayList<String>>() {};
     private String homename_db;
     private String userID_db;
+    private ArrayList<String> mqttSettings_db = new ArrayList<>();
     //private ArrayList<String> listofrooms_db;
     //private ArrayList<String> listoffav_db;
     private String roomsString_db;
@@ -104,6 +107,12 @@ public class HomeActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     homename_db = dataSnapshot.child("HomeName").getValue(String.class);
                     userID_db = dataSnapshot.child("userID").getValue(String.class);
+                    String mqttUsername = dataSnapshot.child("MQTT").child("username").getValue(String.class);
+                    String mqttPassword = dataSnapshot.child("MQTT").child("password").getValue(String.class);
+                    String mqttServer = dataSnapshot.child("MQTT").child("serverURI").getValue(String.class);
+                    mqttSettings_db.add(mqttUsername);
+                    mqttSettings_db.add(mqttPassword);
+                    mqttSettings_db.add(mqttServer);
                     //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
                     //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
                     roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
@@ -148,6 +157,14 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.AddFavId:
                 Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.SettingsId:
+                Intent settingsIntent = new Intent(HomeActivity.this, MqttSettingsActivity.class);
+                settingsIntent.putExtra("USERID", userID);
+                settingsIntent.putExtra("PROFILEKEY", profileKey);
+                settingsIntent.putExtra("MQTTSETTINGS", mqttSettings_db);
+                settingsIntent.putExtra("HOMENAME", homename_db);
+                startActivityForResult(settingsIntent, SETTINGS);
+                return true;
             case R.id.AboutUsId:
                 Toast.makeText(HomeActivity.this, "We are the JAVA gods", Toast.LENGTH_SHORT).show();
                 return true;
@@ -182,5 +199,13 @@ public class HomeActivity extends AppCompatActivity {
         // TODO: When HomeFragment is active, propose to logout instead of doing nothing
         if(this.getSupportFragmentManager().getBackStackEntryCount() != 0)
             super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SETTINGS) {
+            // do nothing
+        }
     }
 }

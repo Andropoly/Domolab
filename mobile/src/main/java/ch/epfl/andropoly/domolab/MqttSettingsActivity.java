@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.annotations.Nullable;
@@ -22,13 +23,17 @@ import com.google.firebase.database.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import JsonUtilisties.myJsonReader;
 
 public class MqttSettingsActivity extends AppCompatActivity {
+
     private String mHouseName;
     private String mMqttServerURI;
     private String mMqttUsername;
     private String mMqttPassword;
+    private ArrayList<String> mqttSettings;
 
     private EditText mHouse;
     private EditText mServer;
@@ -51,10 +56,25 @@ public class MqttSettingsActivity extends AppCompatActivity {
         Button saveButton = (Button)findViewById(R.id.saveSettingsButton);
         Button cancelButton = (Button)findViewById(R.id.cancelSettingButton);
 
+        mHouse = (EditText) findViewById(R.id.houseTextEdit);
+        mServer = (EditText) findViewById(R.id.mqttServerTextEdit);
+        mUsername = (EditText) findViewById(R.id.mqttUsernameTextEdit);
+        mPassword = (EditText) findViewById(R.id.mqttPasswordTextEdit);
+
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             userID = intent.getExtras().getString("USERID");
             profileKey = intent.getExtras().getString("PROFILEKEY");
+
+            if(intent.getExtras().size() > 2) {
+                mqttSettings = intent.getExtras().getStringArrayList("MQTTSETTINGS");
+                mHouseName = intent.getExtras().getString("HOMENAME");
+
+                mHouse.setText(mHouseName);
+                mUsername.setText(mqttSettings.get(0));
+                mPassword.setText(mqttSettings.get(1));
+                mServer.setText(mqttSettings.get(2));
+            }
 
             database = FirebaseDatabase.getInstance();
             profileGetRef = database.getReference("profiles");
@@ -66,11 +86,6 @@ public class MqttSettingsActivity extends AppCompatActivity {
                     /**
                      * On save clicked, the value of the text are stored into a json file for further used.
                      */
-
-                    mHouse = (EditText) findViewById(R.id.houseTextEdit);
-                    mServer = (EditText) findViewById(R.id.mqttServerTextEdit);
-                    mUsername = (EditText) findViewById(R.id.mqttUsernameTextEdit);
-                    mPassword = (EditText) findViewById(R.id.mqttPasswordTextEdit);
 
                     JSONObject obj1 = new JSONObject();
                     JSONObject obj2 = new JSONObject();
