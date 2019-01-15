@@ -11,6 +11,7 @@ import android.widget.Button;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,10 +44,9 @@ public class Tes2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 JSONObject obj = null;
                 JSONObject obj2 = null;
+                JSONArray myObj = null;
                 try {
-                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this, "roomsDefinition.json");
-                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"coucou.json", obj);
-                    obj2 = myJsonReader.jsonObjFromFileInternal( Tes2Activity.this,"coucou.json");
+                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"devices.json");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -54,8 +54,11 @@ public class Tes2Activity extends AppCompatActivity {
                 }
 
                 try {
-                    mqttDomolab.sendJSONToTopic(obj2,"test");
+                    //obj.ge
+                    mqttDomolab.sendJsonToTopic(obj.getJSONObject("Light"),"test");
                 } catch (NotConnectedException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 mqttDomolab.disconnect();

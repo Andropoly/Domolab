@@ -37,6 +37,13 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.Nullable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -223,6 +230,7 @@ public class LoginActivity extends AppCompatActivity {
         private DatabaseReference profileRef;
         private boolean mRunningThread = true;
         private String profileKey;
+        private ValueEventListener listener;
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
@@ -303,7 +311,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Authentication successful.",
                                         Toast.LENGTH_SHORT).show();
 
-                                profileGetRef.addValueEventListener(new ValueEventListener() {
+                                listener = profileGetRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         boolean notFoundProfile = true;
@@ -362,6 +370,7 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
+            profileGetRef.removeEventListener(listener);
             Log.d(TAG, "On post exe");
             if (success) {
                 Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
@@ -385,12 +394,38 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         private void addProfileToFirebaseDB() {
+            /*final ArrayList<String> emptyListRoom = new ArrayList<>();
+            emptyListRoom.add("Room");
+            final ArrayList<String> emptyListFav = new ArrayList<>();
+            emptyListFav.add("Kitchen");*/
+            final JSONObject objRoom = new JSONObject();
+            try {
+                objRoom.put("Type", "Room");
+                objRoom.put("Name", "MyRoom");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            final JSONArray roomsArray = new JSONArray();
+            final JSONArray favsArray = new JSONArray();
+            roomsArray.put(objRoom);
+            favsArray.put(objRoom);
+
+            Log.d(TAG, "Rooms array init: " + roomsArray);
+            Log.d(TAG, "Favs array init: " + favsArray);
+
             profileRef.runTransaction( new Transaction.Handler() {
                 @NonNull
                 @Override
                 public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
                     mutableData.child("HomeName").setValue("DefaultName");
                     mutableData.child("userID").setValue(mUser.getUid());
+                    //mutableData.child("listOfRooms").setValue(emptyListRoom);
+                    //mutableData.child("listOfFav").setValue(emptyListFav);
+                    mutableData.child("Rooms").setValue(roomsArray.toString());
+                    mutableData.child("Favorites").setValue(favsArray.toString());
+                    mutableData.child("MQTT").child("username").setValue("");
+                    mutableData.child("MQTT").child("password").setValue("");
+                    mutableData.child("MQTT").child("serverURL").setValue("");
                     return Transaction.success(mutableData);
                 }
                 @Override

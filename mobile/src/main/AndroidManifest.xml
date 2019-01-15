@@ -70,6 +70,8 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
+
+        <activity android:name=".TestWearServiceActivity"/>
     </application>
 
 </manifest>

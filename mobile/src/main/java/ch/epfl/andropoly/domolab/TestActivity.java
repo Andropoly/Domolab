@@ -45,7 +45,7 @@ public class TestActivity extends AppCompatActivity {
                 try {
                     obj.put("434343",3.2);
                     obj.put("3434343",3.2);
-                    mqttDomolab.sendJSONToTopic(obj,"test");
+                    mqttDomolab.sendJsonToTopic(obj,"test");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (NotConnectedException e) {
