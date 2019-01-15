@@ -1,34 +1,38 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
-import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
-import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link ListRoomsFragment .OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link ListRoomsFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class ListRoomsFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
 
-    List<String> list_type = new ArrayList<String>();
-    List<String> list_name = new ArrayList<String>();
-    public static RecyclerView.Adapter mRoomAdapter;
+    private List<String> list_rooms = Arrays.asList(
+            "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
+    );
 
     public ListRoomsFragment() {
         // Required empty public constructor
@@ -48,17 +52,18 @@ public class ListRoomsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View layout = inflater.inflate(R.layout.fragment_list_rooms, container, false);
+        return inflater.inflate(R.layout.fragment_list_rooms, container, false);
+    }
 
-        setRoomAdapter();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
 
         //private RecordingAdapter adapter;
-        RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_rooms);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_rooms);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(layout.getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(mRoomAdapter);
-
-        return layout;
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(new ItemAdapter(list_rooms));
     }
 
     @Override

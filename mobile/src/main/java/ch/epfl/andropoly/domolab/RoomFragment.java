@@ -1,9 +1,14 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Context;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,20 +17,19 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.Nullable;
 
+
 public class RoomFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
-    static private String type_room;
-    static private String room_name;
+    private static String txt_room;
 
     public RoomFragment() {
         // Required empty public constructor
     }
 
-    static public RoomFragment newInstance(String type, String name) {
+    public static RoomFragment newInstance(String room) {
         RoomFragment fragment = new RoomFragment();
         Bundle args = new Bundle();
-        type_room = type;
-        room_name = name;
+        txt_room = room;
 
         return fragment;
     }
@@ -47,19 +51,19 @@ public class RoomFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView device = (TextView) view.findViewById(R.id.txt_device);
-        device.setText(room_name);
+        device.setText(txt_room);
 
         ImageView img_device = (ImageView) view.findViewById(R.id.image_device);
 
-        switch(type_room){
+        switch(txt_room){
             case ("Kitchen"):
                 img_device.setImageResource(R.drawable.table);
                 break;
-            case ("Bedroom"):
+            case ("Room"):
                 img_device.setImageResource(R.drawable.bed);
                 break;
-            case ("Bathroom"):
-                img_device.setImageResource(R.drawable.bathroom);
+            case ("Restroom"):
+                img_device.setImageResource(R.drawable.restroom);
                 break;
             case ("Living room"):
                 img_device.setImageResource(R.drawable.sofa);

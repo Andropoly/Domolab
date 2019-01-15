@@ -1,22 +1,21 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.jetbrains.annotations.Contract;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
@@ -34,9 +33,22 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance() {
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment HomeFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
+        Bundle args = new Bundle();
 
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -50,26 +62,42 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View layout = inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
 
         //private RecordingAdapter adapter;
-        LinearLayoutManager manager = new LinearLayoutManager(layout.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_favorites);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_favorites);
 
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(mHomeAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(new ItemAdapter(list_fav));
+    }
 
-        return layout;
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        /*if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }*/
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        /*if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        //mListener = null;
     }
 
     private void setHomeAdapter(){
