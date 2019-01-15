@@ -1,131 +1,113 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 
 public class HomeFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
-
-    private List<String> list_rooms = Arrays.asList(
-            "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
-    );
-
-    private List<String> list_fav = Arrays.asList(
-            "Kitchen","Restroom","Restroom","Restroom"
-    );
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //private OnFragmentInteractionListener mListener;
+    private static RecyclerView.Adapter mHomeAdapter;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
+    public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
 
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }*/
+        mHomeAdapter = this.setAdapter();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
-        super.onViewCreated(view, savedInstanceState);
+        View layout = inflater.inflate(R.layout.fragment_home, container, false);
 
         //private RecordingAdapter adapter;
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_favorites);
+        LinearLayoutManager manager = new LinearLayoutManager(layout.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_favorites);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new ItemAdapter(list_fav));
-    }
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(mHomeAdapter);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        /*if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }*/
+        return layout;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    /*public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }*/
+    @NonNull
+    @Contract(" -> new")
+    private RecyclerView.Adapter setAdapter(){
+        JSONArray fav_list = new JSONArray();
+        JSONObject room_obj = new JSONObject();
+        List<String> list_type = new ArrayList<String>();
+        List<String> list_name = new ArrayList<String>();
+
+        // Recover list from JSON file
+        try {
+            fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Fill array with JSON array
+        for(int i=0; i<fav_list.length(); i++){
+            try {
+                room_obj = fav_list.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                list_type.add(room_obj.getString("type"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                list_name.add(room_obj.getString("name"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        list_type.add("New");
+        list_name.add("New");
+
+        return new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_favorite));
+    }
 }
