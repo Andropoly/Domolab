@@ -1,5 +1,6 @@
 package ch.epfl.andropoly.domolab;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
+import JsonUtilisties.myJsonReader;
 import MQTTsender.MqttDomolab;
 import MQTTsender.NotConnectedException;
 
@@ -41,18 +45,23 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 JSONObject obj = new JSONObject();
-
                 try {
-                    obj.put("434343",3.2);
-                    obj.put("3434343",3.2);
-                    mqttDomolab.sendJsonToTopic(obj,"test");
+                    obj = myJsonReader.jsonObjFromFileInternal( TestActivity.this,"first.json");
+                    myJsonReader.jsonWriteFileInternal(TestActivity.this, "sec.json", obj);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                try {
+                    mqttDomolab.sendJsonToTopic(obj,"test");
                 } catch (NotConnectedException e) {
                     e.printStackTrace();
                     Toast.makeText(Domolab.getContext(), "Not connected",
                             Toast.LENGTH_SHORT).show();
                 }
+                Intent intent = new Intent(TestActivity.this, Tes2Activity.class);
+                startActivity(intent);
             }
         });
     }
