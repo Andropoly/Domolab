@@ -14,9 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacer"
         android:layout_marginLeft="@dimen/spacer"
+        android:layout_marginTop="@dimen/spacer"
         android:layout_marginEnd="@dimen/spacer"
         android:layout_marginRight="@dimen/spacer"
-        android:layout_marginTop="@dimen/spacer"
+        android:layout_marginBottom="@dimen/spacer"
         android:text="@string/home_rooms"
         android:textSize="@dimen/txt_title"
         android:textStyle="bold" />

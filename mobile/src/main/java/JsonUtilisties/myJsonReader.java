@@ -12,8 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import ch.epfl.andropoly.domolab.HomeActivity;
-
 public class myJsonReader {
     private static String stringFromFile(Context activityContext, String filename) throws IOException {
         InputStream is = activityContext.getAssets().open(filename);
