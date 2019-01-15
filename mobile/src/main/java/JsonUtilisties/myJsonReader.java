@@ -37,20 +37,41 @@ public class myJsonReader {
     }
 
     public static JSONObject jsonObjFromFileAsset(Context activityContext, String filename) throws IOException, JSONException {
+        /**
+         *  Create a json object from a json file in the asset resources file. This is used to get
+         *  an object for the devices and room list
+         */
         return new JSONObject(stringFromFile(activityContext, filename));
     }
     public static JSONObject jsonObjFromFileInternal(Context activityContext, String filename) throws IOException, JSONException {
+        /**
+         *  Create a json object from a json file internally stored. This is used to get the stored
+         *  values and states of the home
+         */
         return new JSONObject(stringFromFileInternal(activityContext, filename));
     }
     public static JSONArray jsonArrFromFileAsset(Context activityContext, String filename) throws IOException, JSONException {
+        /**
+         *  Create a json array from a json file in the asset resources file. This is used to get
+         *  an object for the devices and room list
+         */
         return new JSONArray(stringFromFile(activityContext, filename));
     }
     public static JSONArray jsonArrFromFileInternal(Context activityContext, String filename) throws IOException, JSONException {
+        /**
+         *  Create a json array from a json file internally stored. This is used to get the stored
+         *  values and states of the home
+         */
         return new JSONArray(stringFromFileInternal(activityContext, filename));
     }
 
 
     public static void jsonWriteFileInternal(Context activityContext, String filename, JSONObject obj){
+        /**
+         * Write the Json object into a internally stored file so it can be accessed later.
+         * The file is in private mode to avoid bothering and being read by others
+         */
+
         FileOutputStream outputStream;
         try {
             outputStream = activityContext.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -61,6 +82,11 @@ public class myJsonReader {
         }
     }
     public static void jsonWriteFileInternal(Context activityContext, String filename, JSONArray obj){
+        /**
+         * Write the Json array into a internally stored file so it can be accessed later.
+         * The file is in private mode to avoid bothering and being read by others
+         */
+
         FileOutputStream outputStream;
         try {
             outputStream = activityContext.openFileOutput(filename, Context.MODE_PRIVATE);

@@ -6,6 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -16,6 +19,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import JsonUtilisties.myJsonReader;
 
 public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.PopupAddingRoomListener, PopupEditRoom.PopupEditRoomListener {
     private final String TAG = this.getClass().getSimpleName();
@@ -79,6 +90,45 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.NeedHelpId:
+                Toast.makeText(HomeActivity.this, "Really Nigga -_- you help for that ?", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.AddRoomId:
+                Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.AddFavId:
+                Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.AboutUsId:
+                Toast.makeText(HomeActivity.this, "We are the JAVA gods", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.LogOutId:
+                logOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logOut() {
+        JSONObject JSONCredentials = new JSONObject();
+
+        myJsonReader.jsonWriteFileInternal(HomeActivity.this, "savedCredentials.json", JSONCredentials);
+        Intent LogoutIntent = new Intent(HomeActivity.this, LoginActivity.class);
+        startActivity(LogoutIntent);
     }
 
     private void setFragments(){

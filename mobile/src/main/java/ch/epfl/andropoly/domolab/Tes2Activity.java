@@ -39,6 +39,15 @@ public class Tes2Activity extends AppCompatActivity {
         Domolab.creatAndConnectMqtt( mUsername, mPwd, mServerAddr);
         mqttDomolab =Domolab.getMqttDomolab();
 
+        JSONObject obj3 = new JSONObject();
+        try {
+            obj3 = myJsonReader.jsonObjFromFileInternal(Tes2Activity.this, "mqttCurrentSettings.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -47,21 +56,24 @@ public class Tes2Activity extends AppCompatActivity {
                 JSONArray myObj = null;
                 try {
                     obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"devices.json");
+
+                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this, "first.json", obj);
+                    obj2 = myJsonReader.jsonObjFromFileInternal( Tes2Activity.this,"sec.json");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                try {
+                /*try {
                     //obj.ge
                     mqttDomolab.sendJsonToTopic(obj.getJSONObject("Light"),"test");
                 } catch (NotConnectedException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                mqttDomolab.disconnect();
+                }*/
+                //mqttDomolab.disconnect();
                 Intent intent = new Intent(Tes2Activity.this, TestActivity.class);
                 //intent.putExtra("mqttclient", mqttDomolab);
                 startActivity(intent);
