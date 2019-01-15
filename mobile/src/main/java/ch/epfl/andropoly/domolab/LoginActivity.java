@@ -308,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
             Log.d(TAG, "On post exe");
             if (success) {
-                Intent intentHomeActivity = new Intent(LoginActivity.this, Tes2Activity.class);
+                Intent intentHomeActivity = new Intent(LoginActivity.this, MqttSettingsActivity.class);
                 Log.d(TAG, "success");
                 //TODO: send user id to the homeactivity
                 startActivity(intentHomeActivity);
