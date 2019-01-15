@@ -12,19 +12,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.io.IOException;
-
-import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
-import static JsonUtilisties.myJsonReader.stringFromFileInternal;
 
 public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.PopupAddingRoomListener, PopupEditRoom.PopupEditRoomListener {
     private final String TAG = this.getClass().getSimpleName();
@@ -36,6 +27,16 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
 
     private HomeFragment homeFragment;
     private ListRoomsFragment listRoomsFragment;
+
+    //private GenericTypeIndicator<ArrayList<String>> ArrayListStringType = new GenericTypeIndicator<ArrayList<String>>() {};
+    private String homename_db;
+    private String userID_db;
+    //private ArrayList<String> listofrooms_db;
+    //private ArrayList<String> listoffav_db;
+    private String roomsString_db;
+    private String favsString_db;
+    private JSONArray roomsArray_db;
+    private JSONArray favsArray_db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

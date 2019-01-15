@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
+import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
 import static android.support.constraint.Constraints.TAG;
@@ -93,7 +94,7 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
 
         // Recover list from JSON file
         try {
-            room_def = jsonArrFromFileAsset(getActivity(), "data.json");
+            room_def = jsonArrFromFileInternal(getActivity(), "data_modified.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -108,7 +109,7 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         }
 
         room_def.put(new_room);
-        jsonWriteFileInternal(Domolab.getContext(), "data_modified.json", room_def);
+        jsonWriteFileInternal(getActivity(), "data_modified.json", room_def);
     }
 
     private void fillSpinner(View view){

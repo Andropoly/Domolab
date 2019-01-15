@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +21,13 @@ import java.util.List;
 
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
+import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
 
 public class ListRoomsFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
+
+    List<String> list_type = new ArrayList<String>();
+    List<String> list_name = new ArrayList<String>();
     public static RecyclerView.Adapter mRoomAdapter;
 
     public ListRoomsFragment() {
@@ -47,7 +50,7 @@ public class ListRoomsFragment extends Fragment {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_list_rooms, container, false);
 
-        this.setRoomAdapter(true);
+        setRoomAdapter();
 
         //private RecordingAdapter adapter;
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_rooms);
@@ -68,18 +71,19 @@ public class ListRoomsFragment extends Fragment {
         super.onDetach();
     }
 
-    public void setRoomAdapter(boolean asset){
-        String filename;
+    public void setRoomAdapter(){
         JSONArray fav_list = new JSONArray();
         JSONObject room_obj = new JSONObject();
-        List<String> list_type = new ArrayList<String>();
-        List<String> list_name = new ArrayList<String>();
+
+        list_name.clear();
+        list_type.clear();
 
         try {
-            if(asset)
+            if(mRoomAdapter == null) {
                 fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
-            else
-                fav_list = jsonArrFromFileInternal(Domolab.getContext(), "data_modified.json");
+                jsonWriteFileInternal(getActivity(), "data_modified.json", fav_list);
+            } else
+                fav_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -107,16 +111,15 @@ public class ListRoomsFragment extends Fragment {
             }
         }
 
-        list_type.add("New");
         list_name.add("New");
+        list_type.add("New");
 
-        Log.e(TAG, String.valueOf(list_name));
-
-        mRoomAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
+        if(mRoomAdapter == null)
+            mRoomAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
     }
 
     public void updateAdapter(){
-        setRoomAdapter(false);
+        setRoomAdapter();
         mRoomAdapter.notifyDataSetChanged();
     }
 }
