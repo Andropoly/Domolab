@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".RoomFragment"
-    tools:ignore="UseCompoundDrawables">
+    tools:context=".RoomFragment">
 
     <TextView
         android:id="@+id/txt_device"
@@ -19,4 +17,4 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/room_fragment"
         android:src="@drawable/penguin" />
-</LinearLayout>
+</FrameLayout>
