@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/AddId"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/menu_add_title"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/AddRoomId"
+                android:title="@string/menu_add_room" />
+            <item
+                android:id="@+id/AddFavId"
+                android:title="@string/menu_add_favorite" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/NeedHelpId"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="@string/menu_need_help"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/AboutUsId"
+        android:title="@string/menu_about_us">
+    </item>
+    <item
+        android:id="@+id/LogOutId"
+        android:title="@string/menu_logout">
+    </item>
+</menu>

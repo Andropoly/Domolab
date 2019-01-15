@@ -25,4 +25,11 @@
   
     <string name="room_fragment">Room_fragment</string>
     <string name="home_page">home_page</string>
+    <string name="menu_add_title">Add...</string>
+    <string name="menu_add_room">Add room</string>
+    <string name="menu_add_favorite">Add favorite</string>
+    <string name="menu_other_options">Other options...</string>
+    <string name="menu_need_help">Need Help ?</string>
+    <string name="menu_about_us">About us</string>
+    <string name="menu_logout">Log out</string>
 </resources>

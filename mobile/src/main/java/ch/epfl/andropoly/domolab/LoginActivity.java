@@ -41,8 +41,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import JsonUtilisties.myJsonReader;
+
+import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
 
 /**
  * A login screen that offers login via email/password.
@@ -56,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final boolean SIGN_IN = true;
     private static final boolean REGISTER = false;
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "-----LoginActivity-----";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -68,6 +73,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    // keep user credentials between two connections
+    private JSONObject JSONCredential = new JSONObject();
+    private boolean savedCredentials = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +97,29 @@ public class LoginActivity extends AppCompatActivity {
             return false;
             }
         });
+
+        Log.d(TAG, "look for saved credentials");
+
+        try {
+            savedCredentials = true;
+            JSONCredential = jsonObjFromFileInternal(LoginActivity.this, "savedCredentials.json");
+        } catch (IOException e) {
+            savedCredentials = false;
+            e.printStackTrace();
+        } catch (JSONException e) {
+            savedCredentials = false;
+            e.printStackTrace();
+        }
+
+        if(savedCredentials) {
+            Log.d(TAG, "found saved credentials");
+            try {
+                mEmailView.setText(JSONCredential.get("email").toString());
+                mPasswordView.setText(JSONCredential.get("password").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -232,6 +264,7 @@ public class LoginActivity extends AppCompatActivity {
         private String profileKey;
         private ValueEventListener listener;
 
+
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
             mPassword = password;
@@ -370,14 +403,21 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-            profileGetRef.removeEventListener(listener);
+
             Log.d(TAG, "On post exe");
             if (success) {
-                Intent intentHomeActivity = new Intent(LoginActivity.this, Tes2Activity.class);
-                Log.d(TAG, "success");
-                String userID = mUser.getUid();
-                Log.d(TAG, "user ID:" + userID);
-                Log.d(TAG, "profile key:" + profileKey);
+                profileGetRef.removeEventListener(listener);
+                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
+
+                try {
+                    JSONCredential.put("email", mEmail);
+                    JSONCredential.put("password", mPassword);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
+                myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
+
                 intentHomeActivity.putExtra("PROFILEKEY", profileKey);
                 //intentHomeActivity.putExtra("USERID", userID);
                 startActivity(intentHomeActivity);
