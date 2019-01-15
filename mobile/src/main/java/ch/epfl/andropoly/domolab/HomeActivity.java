@@ -135,7 +135,7 @@ public class HomeActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.NeedHelpId:
-                Toast.makeText(HomeActivity.this, "Really Nigga -_- you help for that ?", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Really Nigga -_- you need help for that ?", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.AddRoomId:
                 Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_LONG).show();
