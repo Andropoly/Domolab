@@ -108,6 +108,8 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
                 return true;
             case R.id.AddRoomId:
                 Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_LONG).show();
+                PopupAddingRoom popupAddingRoom = new PopupAddingRoom();
+                popupAddingRoom.show(this.getSupportFragmentManager(), "Popup adding room");
                 return true;
             case R.id.AddFavId:
                 Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_LONG).show();
