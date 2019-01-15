@@ -16,13 +16,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
-    private final String TAG = this.getClass().getSimpleName();
+    private final String TAG = "------" + this.getClass().getSimpleName() + "------";
 
     private List<String> list_rooms = Arrays.asList(
             "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
@@ -31,11 +36,25 @@ public class HomeActivity extends AppCompatActivity {
     private List<String> list_fav = Arrays.asList(
             "Kitchen","Restroom","Restroom","Restroom"
     );
+
+    // Databse variable
     private String userID;
     private String profileKey;
     private DatabaseReference profileRef;
     private FirebaseDatabase database;
 
+    //private GenericTypeIndicator<ArrayList<String>> ArrayListStringType = new GenericTypeIndicator<ArrayList<String>>() {};
+    private String homename_db;
+    private String userID_db;
+    //private ArrayList<String> listofrooms_db;
+    //private ArrayList<String> listoffav_db;
+    private String roomsString_db;
+    private String favsString_db;
+    private JSONArray roomsArray_db;
+    private JSONArray favsArray_db;
+
+
+    // Main code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +89,21 @@ public class HomeActivity extends AppCompatActivity {
         profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String homename_db = dataSnapshot.child("HomeName").getValue(String.class);
-                String userID_db = dataSnapshot.child("userID").getValue(String.class);
-                setLayoutWithDatabase(homename_db, userID_db);
+                homename_db = dataSnapshot.child("HomeName").getValue(String.class);
+                userID_db = dataSnapshot.child("userID").getValue(String.class);
+                //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
+                //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
+                roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
+                favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
+
+                try {
+                    roomsArray_db = new JSONArray(roomsString_db);
+                    favsArray_db = new JSONArray(favsString_db);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                setLayoutWithDatabase();
             }
 
             @Override
@@ -80,12 +111,17 @@ public class HomeActivity extends AppCompatActivity {
                 // Empty
             }
         });
+
     }
 
-    private void setLayoutWithDatabase(String homename, String userid) {
-        Toast.makeText(HomeActivity.this, "Welcome to your home: " + homename + " !",
+    private void setLayoutWithDatabase() {
+        Toast.makeText(HomeActivity.this, "Welcome to your home: " + homename_db + " !",
                 Toast.LENGTH_LONG).show();
-        Log.d(TAG, "Welcome to your home: " + homename + " !");
+        Log.d(TAG, "Welcome "+ userID_db + " to your home: " + homename_db + " !");
+        //Log.d(TAG, "Your rooms: " + listofrooms_db);
+        //Log.d(TAG, "Your favorites: " + listoffav_db);
+        Log.d(TAG, "Rooms info are contained in " + roomsArray_db);
+        Log.d(TAG, "Favs info are contained in " + favsArray_db);
     }
 
     @Override
