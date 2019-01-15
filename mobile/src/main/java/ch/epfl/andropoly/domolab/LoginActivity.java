@@ -402,7 +402,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
 
             Log.d(TAG, "On post exe");
             if (success) {
@@ -417,11 +416,12 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
-
                 intentHomeActivity.putExtra("PROFILEKEY", profileKey);
+                showProgress(false);
                 //intentHomeActivity.putExtra("USERID", userID);
                 startActivity(intentHomeActivity);
             } else {
+                showProgress(false);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
