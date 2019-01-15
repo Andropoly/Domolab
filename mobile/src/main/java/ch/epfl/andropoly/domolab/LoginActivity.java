@@ -437,8 +437,8 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
                 intent.putExtra("PROFILEKEY", profileKey);
-                showProgress(false);
                 intent.putExtra("USERID", mUser.getUid());
+                showProgress(false);
                 startActivity(intent);
             } else {
                 showProgress(false);

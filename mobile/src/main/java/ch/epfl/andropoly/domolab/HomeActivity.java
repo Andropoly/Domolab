@@ -95,10 +95,11 @@ public class HomeActivity extends AppCompatActivity {
 
 
             database = FirebaseDatabase.getInstance();
-            //profileGetRef = database.getReference("profiles");
-            //profileRef = profileGetRef.child(profileKey).getRef();
-            profileRef = database.getReference("profiles");
-            profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
+            profileGetRef = database.getReference("profiles");
+            profileRef = profileGetRef.child(profileKey).getRef();
+            //profileRef = database.getReference("profiles");
+            //profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
+            profileRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     homename_db = dataSnapshot.child("HomeName").getValue(String.class);
@@ -107,7 +108,6 @@ public class HomeActivity extends AppCompatActivity {
                     //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
                     roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
                     favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
-                    String adduselessline = "1";
 
                     try {
                         roomsArray_db = new JSONArray(roomsString_db);
