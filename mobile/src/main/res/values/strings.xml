@@ -19,6 +19,7 @@
     <string name="room_name">Room name</string>
     <string name="room_image">Room image</string>
     <string name="background_color_button">background_color_button</string>
+
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_tes2">Tes2Activity</string>
     <string name="title_activity_settings_mqtt">Settings</string>
@@ -105,4 +106,14 @@
     <string name="put_the_mqtt_server_password">Put the MQTT server password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+  
+    <string name="room_fragment">Room_fragment</string>
+    <string name="home_page">home_page</string>
+    <string name="menu_add_title">Add...</string>
+    <string name="menu_add_room">Add room</string>
+    <string name="menu_add_favorite">Add favorite</string>
+    <string name="menu_other_options">Other options...</string>
+    <string name="menu_need_help">Need Help ?</string>
+    <string name="menu_about_us">About us</string>
+    <string name="menu_logout">Log out</string>
 </resources>

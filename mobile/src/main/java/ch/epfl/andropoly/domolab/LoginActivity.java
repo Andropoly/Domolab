@@ -28,6 +28,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import JsonUtilisties.myJsonReader;
+
+import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
 
 /**
  * A login screen that offers login via email/password.
@@ -41,17 +61,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final boolean SIGN_IN = true;
     private static final boolean REGISTER = false;
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "-----LoginActivity-----";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginRegisterTask mAuthTask = null;
+
 
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    // keep user credentials between two connections
+    private JSONObject JSONCredential = new JSONObject();
+    private boolean savedCredentials = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +98,29 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Log.d(TAG, "look for saved credentials");
+
+        try {
+            savedCredentials = true;
+            JSONCredential = jsonObjFromFileInternal(LoginActivity.this, "savedCredentials.json");
+        } catch (IOException e) {
+            savedCredentials = false;
+            e.printStackTrace();
+        } catch (JSONException e) {
+            savedCredentials = false;
+            e.printStackTrace();
+        }
+
+        if(savedCredentials) {
+            Log.d(TAG, "found saved credentials");
+            try {
+                mEmailView.setText(JSONCredential.get("email").toString());
+                mPasswordView.setText(JSONCredential.get("password").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -91,6 +139,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
     }
 
 
@@ -207,7 +257,13 @@ public class LoginActivity extends AppCompatActivity {
         private FirebaseUser mUser;
         private boolean mSuccess = false;
         private FirebaseAuth mAuth;
+        private FirebaseDatabase database;
+        private DatabaseReference profileGetRef;
+        private DatabaseReference profileRef;
         private boolean mRunningThread = true;
+        private String profileKey;
+        private ValueEventListener listener;
+
 
         UserLoginRegisterTask(String email, String password, boolean signin) {
             mEmail = email;
@@ -215,6 +271,8 @@ public class LoginActivity extends AppCompatActivity {
             mSignin = signin;
             mUser = null;
             mAuth = FirebaseAuth.getInstance();
+            database = FirebaseDatabase.getInstance();
+            profileGetRef = database.getReference("profiles");
         }
 
         @Override
@@ -246,6 +304,11 @@ public class LoginActivity extends AppCompatActivity {
                                 mUser = mAuth.getCurrentUser();
                                 Toast.makeText(LoginActivity.this, "Registration successful.",
                                         Toast.LENGTH_SHORT).show();
+
+                                profileRef = profileGetRef.push();
+                                addProfileToFirebaseDB();
+                                profileKey = profileRef.getKey();
+
                                 mSuccess = true;
                                 mRunningThread = false;
                             } else {
@@ -280,8 +343,42 @@ public class LoginActivity extends AppCompatActivity {
                                 mUser = mAuth.getCurrentUser();
                                 Toast.makeText(LoginActivity.this, "Authentication successful.",
                                         Toast.LENGTH_SHORT).show();
+
+                                listener = profileGetRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        boolean notFoundProfile = true;
+                                        Log.d(TAG, "start looking for profiles");
+                                        for (final DataSnapshot profile : dataSnapshot.getChildren()) {
+                                            String userIdDatabase = profile.child("userID").getValue(String.class);
+                                            Log.d(TAG, "found a userID");
+
+                                            if (mUser.getUid().equals(userIdDatabase)) {
+                                                Log.d(TAG, "same userID as connected user");
+                                                notFoundProfile = false;
+                                                profileKey = profile.getKey();
+                                                break;
+                                            }
+                                        }
+                                        if (notFoundProfile) {
+                                            // What to do if new user (nothing in the database)
+                                            Log.d(TAG, "No corresponding profile in the database");
+                                            profileRef = profileGetRef.push();
+                                            addProfileToFirebaseDB();
+                                            profileKey = profileRef.getKey();
+                                        }
+
+                                        mRunningThread = false;
+
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        mRunningThread = false;
+                                    }
+
+                                });
+
                                 mSuccess = true;
-                                mRunningThread = false;
 
                             } else {
                                 // If sign in fails, display a message to the user.
@@ -305,14 +402,26 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
+
             Log.d(TAG, "On post exe");
             if (success) {
-                Intent intentHomeActivity = new Intent(LoginActivity.this, MqttSettingsActivity.class);
-                Log.d(TAG, "success");
-                //TODO: send user id to the homeactivity
+                profileGetRef.removeEventListener(listener);
+                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
+
+                try {
+                    JSONCredential.put("email", mEmail);
+                    JSONCredential.put("password", mPassword);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
+                myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
+                intentHomeActivity.putExtra("PROFILEKEY", profileKey);
+                showProgress(false);
+                //intentHomeActivity.putExtra("USERID", userID);
                 startActivity(intentHomeActivity);
             } else {
+                showProgress(false);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
@@ -323,9 +432,50 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+
+        private void addProfileToFirebaseDB() {
+            /*final ArrayList<String> emptyListRoom = new ArrayList<>();
+            emptyListRoom.add("Room");
+            final ArrayList<String> emptyListFav = new ArrayList<>();
+            emptyListFav.add("Kitchen");*/
+            final JSONObject objRoom = new JSONObject();
+            try {
+                objRoom.put("Type", "Room");
+                objRoom.put("Name", "MyRoom");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            final JSONArray roomsArray = new JSONArray();
+            final JSONArray favsArray = new JSONArray();
+            roomsArray.put(objRoom);
+            favsArray.put(objRoom);
+
+            Log.d(TAG, "Rooms array init: " + roomsArray);
+            Log.d(TAG, "Favs array init: " + favsArray);
+
+            profileRef.runTransaction( new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                    mutableData.child("HomeName").setValue("DefaultName");
+                    mutableData.child("userID").setValue(mUser.getUid());
+                    //mutableData.child("listOfRooms").setValue(emptyListRoom);
+                    //mutableData.child("listOfFav").setValue(emptyListFav);
+                    mutableData.child("Rooms").setValue(roomsArray.toString());
+                    mutableData.child("Favorites").setValue(favsArray.toString());
+                    mutableData.child("MQTT").child("username").setValue("");
+                    mutableData.child("MQTT").child("password").setValue("");
+                    mutableData.child("MQTT").child("serverURL").setValue("");
+                    return Transaction.success(mutableData);
+                }
+                @Override
+                public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                {
+                }
+            });
+        }
+
     }
 }
-
-
 
 
