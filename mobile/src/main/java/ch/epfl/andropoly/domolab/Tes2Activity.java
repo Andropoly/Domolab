@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -45,9 +44,9 @@ public class Tes2Activity extends AppCompatActivity {
                 JSONObject obj = null;
                 JSONObject obj2 = null;
                 try {
-                    obj = myJsonReader.jsonFromFileAsset( Tes2Activity.this,"test.json");
+                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this, "roomsDefinition.json");
                     myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"coucou.json", obj);
-                    obj2 = myJsonReader.jsonFromFileInternal( Tes2Activity.this,"coucou.json");
+                    obj2 = myJsonReader.jsonObjFromFileInternal( Tes2Activity.this,"coucou.json");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {

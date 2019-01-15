@@ -364,7 +364,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
             Log.d(TAG, "On post exe");
             if (success) {
-                Intent intentHomeActivity = new Intent(LoginActivity.this, Tes2Activity.class);
+                Intent intentHomeActivity = new Intent(LoginActivity.this, HomeActivity.class);
                 Log.d(TAG, "success");
                 String userID = mUser.getUid();
                 Log.d(TAG, "user ID:" + userID);
