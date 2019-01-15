@@ -48,7 +48,7 @@ public class myJsonReader {
     }
 
 
-    public static void jsonObjWriteFileInternal(Context activityContext, String filename, JSONObject obj){
+    public static void jsonWriteFileInternal(Context activityContext, String filename, JSONObject obj){
         FileOutputStream outputStream;
         try {
             outputStream = activityContext.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -58,7 +58,7 @@ public class myJsonReader {
             e.printStackTrace();
         }
     }
-    public static void jsonArrWriteFileInternal(Context activityContext, String filename, JSONArray obj){
+    public static void jsonWriteFileInternal(Context activityContext, String filename, JSONArray obj){
         FileOutputStream outputStream;
         try {
             outputStream = activityContext.openFileOutput(filename, Context.MODE_PRIVATE);

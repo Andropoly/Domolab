@@ -56,7 +56,7 @@ public class Tes2Activity extends AppCompatActivity {
 
                 try {
                     //obj.ge
-                    mqttDomolab.sendJSONToTopic(obj.getJSONObject("Light"),"test");
+                    mqttDomolab.sendJsonToTopic(obj.getJSONObject("Light"),"test");
                 } catch (NotConnectedException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
