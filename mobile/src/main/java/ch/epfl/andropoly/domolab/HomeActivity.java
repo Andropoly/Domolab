@@ -148,6 +148,11 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
                 e.printStackTrace();
             }
         }
+        try {
+            mqttDomolab.subscribeToTopic("allHouse");
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
 
     }
 

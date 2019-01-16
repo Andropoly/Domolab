@@ -131,8 +131,10 @@ public class MqttDomolab{
                         disconnectedBufferOptions.setPersistBuffer(false);
                         disconnectedBufferOptions.setDeleteOldestMessages(false);
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+
                         try {
                             subscribeToTopic(mSubscriptionTopic);
+                            sendMsgToTopic("An app is connected","status");
                         } catch (NotConnectedException e) {
                             e.printStackTrace();
                         }

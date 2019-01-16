@@ -119,17 +119,11 @@ public class MqttSettingsActivity extends AppCompatActivity {
 
                         if (Domolab.mqttIsCreated()){
                             Domolab.getMqttDomolab().disconnect();
-                            Domolab.getMqttDomolab().setServerUri(mMqttServerURI);
-                            Domolab.getMqttDomolab().setUsername(mMqttUsername);
-                            Domolab.getMqttDomolab().setPassword(mMqttPassword);
 
                             try {
-                                Thread.sleep(1000);
                                 Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
                                 Domolab.getMqttDomolab().connect();
                             } catch (AlreadyConnectecException e) {
-                                e.printStackTrace();
-                            } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         } else {
