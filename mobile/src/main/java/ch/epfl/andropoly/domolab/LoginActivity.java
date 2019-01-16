@@ -478,6 +478,8 @@ public class LoginActivity extends AppCompatActivity {
         private void addProfileToFirebaseDB() {
 
             // JSON arrays containing several room objects
+            final JSONObject room1 = new JSONObject();
+            final JSONObject room2 = new JSONObject();
             final JSONArray roomsArray = new JSONArray();
             final JSONArray favsArray = new JSONArray();
             final JSONObject device1Inputs = new JSONObject();
@@ -491,6 +493,11 @@ public class LoginActivity extends AppCompatActivity {
             final JSONObject AllRoomsDevices = new JSONObject();
 
             try {
+                room1.put("Type", "Bedroom");
+                room1.put("Name", "MyBedroom");
+                room1.put("Type", "Kitchen");
+                room1.put("Name", "MyKitchen");
+
                 device1Inputs.put("Toggle", 0);
                 device1Inputs.put("Slider", 50);
                 device1.put("Type", "Lamp");
@@ -506,8 +513,10 @@ public class LoginActivity extends AppCompatActivity {
                 Room1Devices.put("Right lamp", device1);
                 Room1Devices.put("Left heat", device2);
 
-                AllRoomsDevices.put("Kitchen", Room2Devices);
-                AllRoomsDevices.put("Bedroom", Room1Devices);
+                AllRoomsDevices.put("MyKitchen", Room2Devices);
+                AllRoomsDevices.put("MyBedroom", Room1Devices);
+
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
