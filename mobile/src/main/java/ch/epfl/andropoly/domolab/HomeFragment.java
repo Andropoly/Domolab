@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
@@ -59,6 +60,19 @@ public class HomeFragment extends Fragment {
         //private RecordingAdapter adapter;
         LinearLayoutManager manager = new LinearLayoutManager(layout.getContext(), LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_favorites);
+
+        final TextView TempView = layout.findViewById(R.id.tempView);
+        String temp = Double.toString(Domolab.temp);
+        TempView.setText(temp+"°");
+
+        Domolab.TempChanged.setListener(new BooleanVariable.ChangeListener() {
+            @Override
+            public void onChange() {
+                String temp = Double.toString(Domolab.temp);
+                TempView.setText(temp+"°");
+
+            }
+        });
 
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(mHomeAdapter);

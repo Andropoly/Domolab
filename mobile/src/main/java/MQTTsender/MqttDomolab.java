@@ -370,6 +370,11 @@ public class MqttDomolab{
                                     }
                                 });
                                 break;
+                            case"temp":
+                                final JSONObject obj2 = new JSONObject(message.toString());
+                                Domolab.temp = obj2.getDouble("Temp");
+                                Domolab.TempChanged.setBoolean(!Domolab.TempChanged.isBoolean());
+                                break;
                         }
                         break;
 

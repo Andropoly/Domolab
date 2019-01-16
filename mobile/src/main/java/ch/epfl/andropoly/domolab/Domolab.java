@@ -35,6 +35,7 @@ public class Domolab extends Application {
 
     public static BooleanVariable DatabaseChanged = new BooleanVariable();
     public static BooleanVariable MqttChanged = new BooleanVariable();
+    public static BooleanVariable TempChanged = new BooleanVariable();
     public static boolean isListening = false;
 
     // Home global variables
@@ -46,7 +47,8 @@ public class Domolab extends Application {
     public static String devicesString_db;
     public static JSONArray roomsArray_db;
     public static JSONArray favsArray_db;
-    public static  JSONObject devicesObject_db;
+    public static JSONObject devicesObject_db;
+    public static double temp;
 
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";

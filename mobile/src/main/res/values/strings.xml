@@ -126,4 +126,7 @@
     <string name="device_icon">device_icon</string>
     <string name="json_list_rooms">list</string>
     <string name="turn_off_all_devices">Turn off all devices</string>
+    <string name="welcome_home">Welcome Home</string>
+    <string name="current_temp">Current Temp:</string>
+    <string name="initial_temp">0.0°</string>
 </resources>

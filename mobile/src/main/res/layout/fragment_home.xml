@@ -35,6 +35,35 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/darker_gray"
+        android:textColor="@color/White"
+        android:gravity="center_horizontal"
+        android:text="@string/welcome_home"
+        android:textSize="100sp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_temp"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/tempView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="@string/initial_temp"
+        android:textSize="100sp" />
+
     <Button
         android:id="@+id/allOffButton"
         style="@style/Widget.AppCompat.Button.Colored"
@@ -49,7 +78,7 @@
     <Space
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2.5" />
+        android:layout_weight="0.5" />
 
 
 </LinearLayout>
