@@ -449,7 +449,7 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
-                myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
+                myJsonReader.jsonWriteFileInternal(LoginActivity.this, Domolab.savedCredentialsFile, JSONCredential);
 
                 // shares database info with the App
                 Domolab.setDatabaseApp(database, profileKey);
@@ -477,23 +477,45 @@ public class LoginActivity extends AppCompatActivity {
         // adds all the necessary information to the new profile of the database
         private void addProfileToFirebaseDB() {
 
-            // JSON object representing one room
-            /*final JSONObject objRoom = new JSONObject();
-            try {
-                objRoom.put("Type", "Bedroom");
-                objRoom.put("Name", "MyRoom");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }*/
-
             // JSON arrays containing several room objects
             final JSONArray roomsArray = new JSONArray();
             final JSONArray favsArray = new JSONArray();
-            //roomsArray.put(objRoom);
-            //favsArray.put(objRoom);
+            final JSONObject device1Inputs = new JSONObject();
+            final JSONObject device1Outputs = new JSONObject();
+            final JSONObject device1 = new JSONObject();
+            final JSONObject device2Inputs = new JSONObject();
+            final JSONObject device2Outputs = new JSONObject();
+            final JSONObject device2 = new JSONObject();
+            final JSONObject Room1Devices = new JSONObject();
+            final JSONObject Room2Devices = new JSONObject();
+            final JSONObject AllRoomsDevices = new JSONObject();
+
+            try {
+                device1Inputs.put("Toggle", 0);
+                device1Inputs.put("Slider", 50);
+                device1.put("Type", "Lamp");
+                device1.put("Inputs", device1Inputs);
+                device1.put("Outputs", device1Outputs);
+
+                device2Inputs.put("Toggle", 1);
+                device2Inputs.put("Slider", 0);
+                device2.put("Type", "Heater");
+                device2.put("Inputs", device2Inputs);
+                device2.put("Outputs", device2Outputs);
+
+                Room1Devices.put("Right lamp", device1);
+                Room1Devices.put("Left heat", device2);
+
+                AllRoomsDevices.put("Kitchen", Room2Devices);
+                AllRoomsDevices.put("Bedroom", Room1Devices);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             Log.d(TAG, "Rooms array init: " + roomsArray);
             Log.d(TAG, "Favs array init: " + favsArray);
+            Log.d(TAG, "Devs object init: " + AllRoomsDevices);
 
             // adds the default data in the database
             profileRef.runTransaction( new Transaction.Handler() {
@@ -504,6 +526,7 @@ public class LoginActivity extends AppCompatActivity {
                     mutableData.child("userID").setValue(mUser.getUid());
                     mutableData.child("Rooms").setValue(roomsArray.toString());
                     mutableData.child("Favorites").setValue(favsArray.toString());
+                    mutableData.child("Devices").setValue(AllRoomsDevices.toString());
                     mutableData.child("MQTT").child("username").setValue("");
                     mutableData.child("MQTT").child("password").setValue("");
                     mutableData.child("MQTT").child("serverURI").setValue("");
