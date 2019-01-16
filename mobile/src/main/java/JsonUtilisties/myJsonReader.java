@@ -1,7 +1,8 @@
 package JsonUtilisties;
 
 import android.content.Context;
-import android.view.View;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,8 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import ch.epfl.andropoly.domolab.HomeActivity;
 
 public class myJsonReader {
     private static String stringFromFile(Context activityContext, String filename) throws IOException {
@@ -81,6 +80,7 @@ public class myJsonReader {
             e.printStackTrace();
         }
     }
+
     public static void jsonWriteFileInternal(Context activityContext, String filename, JSONArray obj){
         /**
          * Write the Json array into a internally stored file so it can be accessed later.
@@ -95,5 +95,91 @@ public class myJsonReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isNameExist(JSONArray array, String key, String value){
+        /**
+         * Check if the value is already existing for a given key.
+         * Return false if it is not already present and true otherwise.
+         */
+        for(int i=0; i<array.length(); i++) {
+            try {
+                if (array.getJSONObject(i).get(key).equals(value)) {
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static void deleteRoom(Context context, String filename, String key, String value){
+        /**
+         * Delete the room from the JSON filename by checking if the value is used with the key.
+         */
+        JSONArray room_list = new JSONArray();
+
+        // Recover list from JSON file
+        try {
+            room_list = jsonArrFromFileInternal(context, filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        for(int i=0; i<room_list.length(); i++) {
+            try {
+                if (room_list.getJSONObject(i).get(key).equals(value)) {
+                    room_list.remove(i);
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        jsonWriteFileInternal(context, filename, room_list);
+    }
+
+    public static void editRoom(Context context, String filename, String key_type, String key_name,
+                          String value_type, String value_name, String btn_room_name){
+        /**
+         * Edit the room from the JSON filename by checking if the value_name is used with the key_name.
+         * Set the new values for:
+         * -    key_type -> value_type
+         * -    key_name -> value_name
+         */
+        JSONArray room_list = new JSONArray();
+
+        // Recover list from JSON file
+        try {
+            room_list = jsonArrFromFileInternal(context, filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        for(int i=0; i<room_list.length(); i++) {
+            try {
+                if (room_list.getJSONObject(i).get(key_name).equals(btn_room_name)) {
+                    if(isNameExist(room_list, key_name, value_name))
+                        room_list.getJSONObject(i).put(key_name, value_name + "'");
+                    else
+                        room_list.getJSONObject(i).put(key_name, value_name);
+
+                    room_list.getJSONObject(i).put(key_type, value_type);
+                    break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        jsonWriteFileInternal(context, filename, room_list);
     }
 }

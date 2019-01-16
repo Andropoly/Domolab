@@ -1,0 +1,26 @@
+{
+  "Kitchen":{
+
+  },
+  "Parents Bedroom":{
+    "Right light":{
+      "Inputs":{
+        "Toggle":0,
+        "Slider":50
+      },
+      "Outputs":{
+
+      }
+    },
+    "Left light":{
+      "Inputs":{
+        "Toggle":1,
+        "Slider":100
+      },
+      "Outputs":{
+
+      }
+    }
+  }
+
+}

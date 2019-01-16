@@ -1,0 +1,22 @@
+{
+  "List": [
+    "Kitchen",
+    "Bedroom",
+    "Bathroom"
+  ],
+
+  "Kitchen":{
+    "Icon": "Kitchen",
+    "Color": "#ffffff"
+  },
+
+  "Bedroom": {
+    "Icon": "Bedroom",
+    "Color": "#ffffff"
+  },
+  "Bathroom":{
+    "Icon": "Bathroom",
+    "Color": "#ffffff"
+  }
+
+}

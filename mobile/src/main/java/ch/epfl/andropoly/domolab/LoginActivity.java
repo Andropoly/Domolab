@@ -431,6 +431,7 @@ public class LoginActivity extends AppCompatActivity {
                     profileGetRef.removeEventListener(listener);
                 }
 
+
                 // if some mqtt settings were missing, start the settings activity to set them
                 if (needSettings) {
                     intent = new Intent(LoginActivity.this, MqttSettingsActivity.class);
@@ -481,7 +482,7 @@ public class LoginActivity extends AppCompatActivity {
             // JSON object representing one room
             final JSONObject objRoom = new JSONObject();
             try {
-                objRoom.put("Type", "Room");
+                objRoom.put("Type", "Bedroom");
                 objRoom.put("Name", "MyRoom");
             } catch (JSONException e) {
                 e.printStackTrace();
