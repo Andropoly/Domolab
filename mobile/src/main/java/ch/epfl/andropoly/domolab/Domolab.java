@@ -26,6 +26,7 @@ public class Domolab extends Application {
     // mqtt private variables
     private static Domolab mContext;
     private static MqttDomolab mqttDomolab;
+    private static Boolean mqttCreated = false;
 
     // database private variables
     private static FirebaseDatabase database;
@@ -63,8 +64,12 @@ public class Domolab extends Application {
         mqttSettings_db.add("");
     }
 
-    public static void creatAndConnectMqtt(String username, String password, String serverURI){
+    public static void creatMqtt(String username, String password, String serverURI){
         mqttDomolab = new MqttDomolab(mContext, username, password, serverURI);
+        mqttCreated = true;
+    }
+    public static boolean mqttIsCreated(){
+        return mqttCreated;
     }
 
     public static MqttDomolab getMqttDomolab(){return  mqttDomolab;}

@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".HomeActivity"
     tools:ignore="MissingDefaultResource">
 
     <TextView
-        android:id="@+id/txt_rooms"
+        android:id="@+id/txt_title_rooms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacer"

@@ -3,6 +3,7 @@ package JsonUtilisties;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static ch.epfl.andropoly.domolab.Domolab.MyDevFile;
 
 public class myJsonReader {
     private static String stringFromFile(Context activityContext, String filename) throws IOException {
@@ -167,7 +170,7 @@ public class myJsonReader {
         for(int i=0; i<room_list.length(); i++) {
             try {
                 if (room_list.getJSONObject(i).get(key_name).equals(btn_room_name)) {
-                    if(isNameExist(room_list, key_name, value_name))
+                    if(isNameExist(room_list, key_name, value_name) && !btn_room_name.equals(value_name))
                         room_list.getJSONObject(i).put(key_name, value_name + "'");
                     else
                         room_list.getJSONObject(i).put(key_name, value_name);
@@ -182,4 +185,91 @@ public class myJsonReader {
 
         jsonWriteFileInternal(context, filename, room_list);
     }
+
+
+    public static void editInputDevices(Context context, String roomName, String deviceName,
+                                String inputType, String value) throws  JSONException {
+        /**
+         * Edit a device string value in a particular room, name, and input type.
+         */
+
+        String filename = MyDevFile;
+        JSONObject myDevices = null;
+
+        try {
+            myDevices = jsonObjFromFileInternal(context, filename);
+        } catch (IOException e) {
+            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
+            e.printStackTrace();
+        }
+        myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").put(inputType,value);
+
+        jsonWriteFileInternal(context, filename, myDevices);
+    }
+    public static void editInputDevices(Context context, String roomName, String deviceName,
+                                        String inputType, int value) throws  JSONException {
+        /**
+         * Edit a device int value in a particular room, name, and input type.
+         */
+
+        String filename = MyDevFile;
+        JSONObject myDevices = null;
+
+
+        try {
+            myDevices = jsonObjFromFileInternal(context, filename);
+        } catch (IOException e) {
+            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
+
+            e.printStackTrace();
+        }
+        myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").put(inputType,value);
+        jsonWriteFileInternal(context, filename, myDevices);
+    }
+    public static void editInputDevices(Context context, String roomName, String deviceName,
+                                        String inputType, float value) throws  JSONException {
+        /**
+         * Edit a device float value in a particular room, name, and input type.
+         */
+
+        String filename = MyDevFile;
+        JSONObject myDevices = null;
+
+        try {
+            myDevices = jsonObjFromFileInternal(context, filename);
+        } catch (IOException e) {
+            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
+            e.printStackTrace();
+        }
+        myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").put(inputType,value);
+
+
+        jsonWriteFileInternal(context, filename, myDevices);
+    }
+    public static void toggleDevices(Context context, String roomName, String deviceName
+                                        ) throws JSONException {
+        /**
+         * Edit a toggle device value to toggle this device in a particular room, name,.
+         */
+
+        String filename = MyDevFile;
+        JSONObject myDevices = null;
+
+        try {
+            myDevices = jsonObjFromFileInternal(context, filename);
+        } catch (IOException e) {
+            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
+            e.printStackTrace();
+        }
+        int state = myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").getInt("Toggle");
+        if (state>0){
+            myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").put("Toggle",0);
+        } else {
+            myDevices.getJSONObject(roomName).getJSONObject(deviceName).getJSONObject("Inputs").put("Toggle",1);
+        }
+
+        jsonWriteFileInternal(context, filename, myDevices);
+    }
+
+
 }

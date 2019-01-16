@@ -15,25 +15,29 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Dialog.DialogAddFavorite;
+import Dialog.DialogAddRoom;
+import Dialog.DialogEditFavorite;
+import Dialog.DialogEditRoom;
 import JsonUtilisties.myJsonReader;
+import MQTTsender.AlreadyConnectecException;
+import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
-public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.PopupAddingRoomListener, PopupEditRoom.PopupEditRoomListener {
-    private final String TAG = "----------" + this.getClass().getSimpleName();
+public class HomeActivity extends AppCompatActivity implements DialogAddRoom.DialogAddRoomListener,
+        DialogEditRoom.DialogEditRoomListener, DialogAddFavorite.DialogAddFavoriteListener,
+        DialogEditFavorite.DialogEditFavoriteListener {
+    private final String TAG = this.getClass().getSimpleName();
 
     private final int SETTINGS = 1;
-
-    private List<String> list_rooms = Arrays.asList(
-            "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
-    );
-
-    private List<String> list_fav = Arrays.asList(
-            "Kitchen","Restroom","Restroom","Restroom"
-    );
 
     // Databse variable
     private String userID;
@@ -44,6 +48,10 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
 
     private HomeFragment homeFragment;
     private ListRoomsFragment listRoomsFragment;
+    private MqttDomolab mqttDomolab;
+    private String mServerAddr;
+    private String mUsername;
+    private String mPwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +107,13 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
                 return true;
             case R.id.AddRoomId:
                 Toast.makeText(HomeActivity.this, "Added Room", Toast.LENGTH_LONG).show();
-                PopupAddingRoom popupAddingRoom = new PopupAddingRoom();
-                popupAddingRoom.show(this.getSupportFragmentManager(), "Popup adding room");
+                DialogAddRoom dialogAddRoom = new DialogAddRoom();
+                dialogAddRoom.show(this.getSupportFragmentManager(), "Popup adding room");
                 return true;
             case R.id.AddFavId:
                 Toast.makeText(HomeActivity.this, "Added Favorite", Toast.LENGTH_SHORT).show();
+                DialogAddFavorite dialogAddFavorite = new DialogAddFavorite();
+                dialogAddFavorite.show(this.getSupportFragmentManager(), "Dialog add favorite");
                 return true;
             case R.id.SettingsId:
                 Intent settingsIntent = new Intent(HomeActivity.this, MqttSettingsActivity.class);
@@ -171,6 +181,11 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
     @Override
     public void updateRoomAdapter() {
         listRoomsFragment.updateAdapter();
+    }
+
+    @Override
+    public void updateFavoriteAdapter() {
+        homeFragment.updateAdapter();
     }
 
     @Override
