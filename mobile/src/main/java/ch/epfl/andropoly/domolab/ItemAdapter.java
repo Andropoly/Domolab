@@ -2,6 +2,7 @@ package ch.epfl.andropoly.domolab;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.annotations.Nullable;
 
 import java.util.List;
 
@@ -48,6 +56,30 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.display(mList_type.get(position), mList_name.get(position));
+    }
+
+    static public void updateDatabase(final FragmentActivity activity, final String item){
+        DatabaseReference profileRef = Domolab.getprofileRef();
+        profileRef.runTransaction( new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                if(item.equals(activity.getResources().getString(R.string.add_room))) {
+                    mutableData.child("Rooms").setValue(Domolab.roomsArray_db.toString());
+                    mutableData.child("Devices").setValue(Domolab.devicesObject_db.toString());
+                } else if(item.equals(activity.getResources().getString(R.string.add_favorite))){
+                    mutableData.child("Favorites").setValue(Domolab.favsArray_db.toString());
+                }
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@android.support.annotation.Nullable DatabaseError databaseError,
+                                   boolean b, @android.support.annotation.Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

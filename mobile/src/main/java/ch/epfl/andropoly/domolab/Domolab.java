@@ -45,7 +45,7 @@ public class Domolab extends Application {
     public static String devicesString_db;
     public static JSONArray roomsArray_db;
     public static JSONArray favsArray_db;
-    public static  JSONObject devicesObject_db;
+    public static JSONObject devicesObject_db;
 
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";

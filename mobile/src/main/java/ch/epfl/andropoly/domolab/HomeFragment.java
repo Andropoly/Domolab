@@ -123,5 +123,6 @@ public class HomeFragment extends Fragment {
 
     public void updateAdapter(){
         setHomeAdapter();
+        ItemAdapter.updateDatabase(getActivity(), this.getResources().getString(R.string.add_favorite));
     }
 }
