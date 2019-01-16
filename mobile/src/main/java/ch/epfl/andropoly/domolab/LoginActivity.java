@@ -495,8 +495,8 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 room1.put("Type", "Bedroom");
                 room1.put("Name", "MyBedroom");
-                room1.put("Type", "Kitchen");
-                room1.put("Name", "MyKitchen");
+                room2.put("Type", "Kitchen");
+                room2.put("Name", "MyKitchen");
 
                 device1Inputs.put("Toggle", 0);
                 device1Inputs.put("Slider", 50);
@@ -516,7 +516,8 @@ public class LoginActivity extends AppCompatActivity {
                 AllRoomsDevices.put("MyKitchen", Room2Devices);
                 AllRoomsDevices.put("MyBedroom", Room1Devices);
 
-
+                roomsArray.put(room1);
+                roomsArray.put(room2);
 
             } catch (JSONException e) {
                 e.printStackTrace();
