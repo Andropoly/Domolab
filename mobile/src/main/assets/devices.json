@@ -1,0 +1,49 @@
+{
+  "List": [
+    "Light",
+    "Radiator"
+  ],
+
+  "Light":{
+    "Icon": "Light",
+    "Color": "#ffffff",
+    "Inputs": {
+      "List":["Toggle","Slider"],
+      "Toggle":{
+        "Type":"Switch",
+        "Name":"On/Off",
+        "Var": "Boolean"
+      },
+      "Slider":{
+        "Type":"Slider",
+        "Name":"Brightness",
+        "Var": "float",
+        "Min":0,
+        "Max":100
+      }
+    },
+    "Outputs": {}
+  },
+
+  "Radiator": {
+    "Icon": "Radiator",
+    "Color": "#ffffff",
+    "Inputs": {
+      "List":["Toggle","Slider"],
+      "Toggle":{
+        "Type":"Switch",
+        "Name":"On/Off",
+        "Var": "Boolean"
+      },
+      "Slider":{
+        "Type":"Slider",
+        "Name":"Brightness",
+        "Var": "float",
+        "Min":0,
+        "Max":40
+      }
+    },
+    "Outputs": {}
+  }
+
+}
