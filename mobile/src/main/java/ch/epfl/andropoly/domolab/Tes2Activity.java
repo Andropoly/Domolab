@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import JsonUtilisties.myJsonReader;
 
+import MQTTsender.MqttDevice;
 import MQTTsender.MqttDomolab;
 import MQTTsender.NotConnectedException;
 
@@ -56,10 +57,9 @@ public class Tes2Activity extends AppCompatActivity {
                 JSONObject obj2 = null;
                 JSONArray myObj = null;
                 try {
-                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"devices.json");
-
-                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this, "first.json", obj);
-                    obj2 = myJsonReader.jsonObjFromFileInternal( Tes2Activity.this,"sec.json");
+                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"testMyDevices.json");
+                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"myDevices.json", obj);
+                    MqttDevice.mqttSendDevice(Tes2Activity.this, mqttDomolab, "Parents Bedroom", "Right light");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {

@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -75,6 +77,7 @@ public class HomeActivity extends AppCompatActivity {
 
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTAG);
 
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.list_rooms_fragment, listRoomsFragment)
@@ -92,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
             userID = intent.getExtras().getString("USERID");
             profileKey = intent.getExtras().getString("PROFILEKEY");
         }
-    
+
         database = FirebaseDatabase.getInstance();
         profileRef = database.getReference("profiles");
         profileRef.child(profileKey).addValueEventListener(new ValueEventListener() {
@@ -120,7 +123,6 @@ public class HomeActivity extends AppCompatActivity {
                 // Empty
             }
         });
-
     }
 
     @Override
@@ -177,5 +179,11 @@ public class HomeActivity extends AppCompatActivity {
         // TODO: When HomeFragment is active, propose to logout instead of doing nothing
         if(this.getSupportFragmentManager().getBackStackEntryCount() != 0)
             super.onBackPressed();
+    }
+
+    public void allOffCallback(View view) {
+
+        Intent intent = new Intent(HomeActivity.this, Tes2Activity.class);
+        startActivity(intent);
     }
 }

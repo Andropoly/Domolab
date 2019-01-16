@@ -1,6 +1,7 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +39,8 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button allOffButton;
 
     //private OnFragmentInteractionListener mListener;
 
@@ -66,16 +70,23 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }*/
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        View layout = inflater.inflate(R.layout.fragment_home, container, false);
+        allOffButton = layout.findViewById(R.id.allOffButton);
+        allOffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Tes2Activity.class);
+                startActivity(intent);
+            }
+        });
+
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -83,11 +94,14 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
+
         //private RecordingAdapter adapter;
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_favorites);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new ItemAdapter(list_fav));
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

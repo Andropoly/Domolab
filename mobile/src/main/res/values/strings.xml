@@ -106,7 +106,7 @@
     <string name="put_the_mqtt_server_password">Put the MQTT server password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
-  
+
     <string name="room_fragment">Room_fragment</string>
     <string name="home_page">home_page</string>
     <string name="menu_add_title">Add...</string>
@@ -116,4 +116,12 @@
     <string name="menu_need_help">Need Help ?</string>
     <string name="menu_about_us">About us</string>
     <string name="menu_logout">Log out</string>
+    <string name="add_device">Device</string>
+    <string name="add_room">Room</string>
+    <string name="add_favorite">Favorite</string>
+
+    <!-- Strings related to json -->
+    <string name="file_rooms_definition">roomsDefinition.json</string>
+    <string name="json_list_rooms">list</string>
+    <string name="turn_off_all_devices">Turn off all devices</string>
 </resources>

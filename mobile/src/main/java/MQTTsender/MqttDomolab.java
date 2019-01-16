@@ -25,7 +25,7 @@ import java.io.UnsupportedEncodingException;
 import ch.epfl.andropoly.domolab.Domolab;
 import ch.epfl.andropoly.domolab.LoginActivity;
 
-public class MqttDomolab implements Serializable {
+public class MqttDomolab{
     public MqttAndroidClient mqttAndroidClient;
 
     private String mServerUri = "tcp://m21.cloudmqtt.com:16233";
@@ -243,6 +243,7 @@ public class MqttDomolab implements Serializable {
         }
 
     }
+
     public void sendJsonToTopic(JSONArray obj, String topic) throws NotConnectedException{
 
         if (mqttAndroidClient.isConnected()) {
