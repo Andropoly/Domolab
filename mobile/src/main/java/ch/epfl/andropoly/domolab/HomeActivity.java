@@ -58,8 +58,6 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        setFragments();
-
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
             // used for accessing the proper profile in the database
@@ -67,88 +65,30 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
             profileKey = intent.getExtras().getString("PROFILEKEY");
         }
 
-        Domolab.DatabaseChanged.setListener(new BooleanVariable.ChangeListener() {
-            @Override
-            public void onChange() {
-                setLayoutWithDatabase();
-            }
-        });
+        if(!Domolab.isAppListening()) {
+            Toast.makeText(HomeActivity.this, "Welcome to your home: " + Domolab.HomeName_db + " !",
+                    Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Welcome " + userID + " to your home: " + Domolab.HomeName_db + " !");
+            Log.d(TAG, "Rooms info are contained in " + Domolab.roomsArray_db);
+            Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
 
-        // gets the proper references for accessing the profile
-        /*database = Domolab.getDatabase();
-        profileGetRef = Domolab.getprofileGetRef();
-        profileRef = Domolab.getprofileRef();*/
-
-            // gathers the data contained in the profile in the database
-            /*profileRef.addValueEventListener(new ValueEventListener() {
+            setFragments();
+        }
+        else {
+            Domolab.DatabaseChanged.setListener(new BooleanVariable.ChangeListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                public void onChange() {
+                    Toast.makeText(HomeActivity.this, "Welcome to your home: " + Domolab.HomeName_db + " !",
+                            Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Welcome "+ userID + " to your home: " + Domolab.HomeName_db + " !");
+                    Log.d(TAG, "Rooms info are contained in " + Domolab.roomsArray_db);
+                    Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
 
-                    //homename_db = dataSnapshot.child("HomeName").getValue(String.class);
-                    userID_db = dataSnapshot.child("userID").getValue(String.class);
+                    setFragments();
 
-                    String mqttUsername = dataSnapshot.child("MQTT").child("username").getValue(String.class);
-                    String mqttPassword = dataSnapshot.child("MQTT").child("password").getValue(String.class);
-                    String mqttServer = dataSnapshot.child("MQTT").child("serverURI").getValue(String.class);
-                    mqttSettings_db.add(mqttUsername);
-                    mqttSettings_db.add(mqttPassword);
-                    mqttSettings_db.add(mqttServer);
-
-                    //listofrooms_db = dataSnapshot.child("listOfRooms").getValue(ArrayListStringType);
-                    //listoffav_db = dataSnapshot.child("listOfFav").getValue(ArrayListStringType);
-                    roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
-                    favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
-
-                    try {
-                        roomsArray_db = new JSONArray(roomsString_db);
-                        favsArray_db = new JSONArray(favsString_db);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    // sets the layout with regard to the gathered data
-                    setLayoutWithDatabase();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Empty
                 }
             });
-        }*/
-        if (Domolab.mqttIsCreated()){
-            mqttDomolab = Domolab.getMqttDomolab();
-        } else {
-            try {
-
-                JSONObject obj = myJsonReader.jsonObjFromFileInternal(HomeActivity.this, "mqttCurrentSettings.json");
-                mServerAddr = obj.getString("MQTTServer");
-                mUsername = obj.getString("MQTTUsername");
-                mPwd = obj.getString("MQTTPassword");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                Toast.makeText(HomeActivity.this, "Not MQTT settings", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-            Domolab.creatMqtt(mUsername, mPwd, mServerAddr);
-            mqttDomolab = Domolab.getMqttDomolab();
-            try {
-                mqttDomolab.connect();
-                mqttDomolab.sendMsgToTopic("An app is connected", "status");
-            } catch (AlreadyConnectecException e) {
-                Toast.makeText(HomeActivity.this, "Couldn't connect to MQTT", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            } catch (NotConnectedException e) {
-                e.printStackTrace();
-            }
         }
-        try {
-            mqttDomolab.subscribeToTopic("allHouse");
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
@@ -223,14 +163,6 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                     .replace(R.id.home_fragment, homeFragment)
                     .commit();
         }
-    }
-    
-    private void setLayoutWithDatabase() {
-        Toast.makeText(HomeActivity.this, "Welcome to your home: " + Domolab.HomeName_db + " !",
-                Toast.LENGTH_LONG).show();
-        Log.d(TAG, "Welcome "+ userID + " to your home: " + Domolab.HomeName_db + " !");
-        Log.d(TAG, "Rooms info are contained in " + Domolab.roomsArray_db);
-        Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
     }
 
     @Override

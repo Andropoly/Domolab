@@ -34,6 +34,7 @@ public class Domolab extends Application {
     private static DatabaseReference profileGetRef;
 
     public static BooleanVariable DatabaseChanged = new BooleanVariable();
+    public static boolean isListening = false;
 
     // Home global variables
     public static String HomeName_db;
@@ -41,8 +42,10 @@ public class Domolab extends Application {
     public static ArrayList<String> mqttSettings_db = new ArrayList<>();
     public static String roomsString_db;
     public static String favsString_db;
+    public static String devicesString_db;
     public static JSONArray roomsArray_db;
     public static JSONArray favsArray_db;
+    public static  JSONObject devicesObject_db;
 
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";
@@ -56,6 +59,9 @@ public class Domolab extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        mqttSettings_db.add("");
+        mqttSettings_db.add("");
+        mqttSettings_db.add("");
     }
 
     public static void creatMqtt(String username, String password, String serverURI){
@@ -87,6 +93,7 @@ public class Domolab extends Application {
 
     private static void setListenerDatabase() {
         Log.d(TAG, "set listener");
+        isListening = true;
         profileRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -98,16 +105,18 @@ public class Domolab extends Application {
                 String mqttPassword = dataSnapshot.child("MQTT").child("password").getValue(String.class);
                 String mqttServer = dataSnapshot.child("MQTT").child("serverURI").getValue(String.class);
 
-                mqttSettings_db.add(mqttUsername);
-                mqttSettings_db.add(mqttPassword);
-                mqttSettings_db.add(mqttServer);
+                mqttSettings_db.set(0, mqttUsername);
+                mqttSettings_db.set(1, mqttPassword);
+                mqttSettings_db.set(2, mqttServer);
 
                 roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
                 favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
+                devicesString_db = dataSnapshot.child("Devices").getValue(String.class);
 
                 try {
                     roomsArray_db = new JSONArray(roomsString_db);
                     favsArray_db = new JSONArray(favsString_db);
+                    devicesObject_db = new JSONObject(devicesString_db);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -117,16 +126,18 @@ public class Domolab extends Application {
                 saveDataInJsonFiles();
 
                 DatabaseChanged.setBoolean(!DatabaseChanged.isBoolean());
+                isListening = false;
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 DatabaseChanged.setBoolean(!DatabaseChanged.isBoolean());
+                isListening = false;
             }
         });
     }
 
-    public static boolean isAppListening() {return DatabaseChanged.isBoolean();    }
+    public static boolean isAppListening() {return isListening;    }
 
     private static void saveDataInJsonFiles() {
         JSONObject JSONHomeName_db = new JSONObject();
@@ -138,6 +149,7 @@ public class Domolab extends Application {
             myJsonReader.jsonWriteFileInternal(getContext(), MyRoomFile , roomsArray_db);
             myJsonReader.jsonWriteFileInternal(getContext(), MyFavFile , favsArray_db);
             myJsonReader.jsonWriteFileInternal(getContext(), mqttSettingsFile , JSONMqttSettings_db);
+            myJsonReader.jsonWriteFileInternal(getContext(), MyDevFile, devicesObject_db);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -78,7 +78,7 @@ public class MqttSettingsActivity extends AppCompatActivity {
 
             // if more than two extras are given then it means that the calling activity is the Home activity
             // in order to modify the settings
-            if(intent.getExtras().size() > 2) {
+            if (intent.getExtras().size() > 2) {
 
                 callingActivity = "HomeActivity";
                 mqttSettings = intent.getExtras().getStringArrayList("MQTTSETTINGS");
@@ -90,32 +90,32 @@ public class MqttSettingsActivity extends AppCompatActivity {
                 mPassword.setText(mqttSettings.get(1));
                 mServer.setText(mqttSettings.get(2));
             }
+        }
 
-            // gets the proper references for accessing the profile
-            database = FirebaseDatabase.getInstance();
-            profileGetRef = database.getReference("profiles");
-            profileRef = profileGetRef.child(profileKey);
+        database = Domolab.getDatabase();
+        profileGetRef = Domolab.getprofileGetRef();
+        profileRef = Domolab.getprofileRef();
 
-            // save the settings
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /**
-                     * On save clicked, the value of the text are stored into a json file for further used.
-                     */
+        // save the settings
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * On save clicked, the value of the text are stored into a json file for further used.
+                 */
 
-                    JSONObject obj1 = new JSONObject();
-                    JSONObject obj2 = new JSONObject();
+                JSONObject obj1 = new JSONObject();
+                JSONObject obj2 = new JSONObject();
 
-                    mHouseName = mHouse.getText().toString();
-                    mMqttServerURI = mServer.getText().toString();
-                    mMqttUsername = mUsername.getText().toString();
-                    mMqttPassword = mPassword.getText().toString();
+                mHouseName = mHouse.getText().toString();
+                mMqttServerURI = mServer.getText().toString();
+                mMqttUsername = mUsername.getText().toString();
+                mMqttPassword = mPassword.getText().toString();
 
 
                     View focusView = null;
 
-                    if (isServerURIValid(mMqttServerURI)) {
+                if (isServerURIValid(mMqttServerURI)) {
 
                         if (Domolab.mqttIsCreated()){
                             Domolab.getMqttDomolab().disconnect();
@@ -149,8 +149,16 @@ public class MqttSettingsActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
-                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
+                        @Override
+                        public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                        {
+                            // starts the main activity after the settings have been saved
+                            Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
+                            intent.putExtra("USERID", userID);
+                            intent.putExtra("PROFILEKEY", profileKey);
+                            startActivity(intent);
+                        }
+                    });
 
                         // also modifies the profile in the databse
                         profileRef.runTransaction( new Transaction.Handler() {
@@ -182,8 +190,8 @@ public class MqttSettingsActivity extends AppCompatActivity {
                         focusView.requestFocus();
                     }
                 }
-            });
-        }
+            }
+        });
 
         // cancels the changes of the settings
         cancelButton.setOnClickListener(new View.OnClickListener() {
