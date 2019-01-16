@@ -15,6 +15,10 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +52,8 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
 
     private HomeFragment homeFragment;
     private ListRoomsFragment listRoomsFragment;
+
+    // MQTT variable
     private MqttDomolab mqttDomolab;
     private String mServerAddr;
     private String mUsername;
@@ -80,7 +86,7 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                 public void onChange() {
                     Toast.makeText(HomeActivity.this, "Welcome to your home: " + Domolab.HomeName_db + " !",
                             Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "Welcome "+ userID + " to your home: " + Domolab.HomeName_db + " !");
+                    Log.d(TAG, "Welcome " + userID + " to your home: " + Domolab.HomeName_db + " !");
                     Log.d(TAG, "Rooms info are contained in " + Domolab.roomsArray_db);
                     Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
 
@@ -89,6 +95,25 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                 }
             });
         }
+
+        testAndCreatMqttClient();
+        Domolab.MqttChanged.setListener(new BooleanVariable.ChangeListener() {
+            @Override
+            public void onChange() {
+                if (Domolab.MqttChanged.isBoolean()) {
+                    mqttDomolab.setAllHouse();
+                } else {
+                    Domolab.creatMqtt(Domolab.mqttSettings_db.get(2), Domolab.mqttSettings_db.get(0), Domolab.mqttSettings_db.get(1));
+                    mqttDomolab = Domolab.getMqttDomolab();
+                    try {
+                        mqttDomolab.connect();
+                    } catch (AlreadyConnectecException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
     }
 
     @Override
@@ -192,7 +217,41 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SETTINGS) {
-            // do nothing
+            //mqttDomolab.disconnect();
+            //mqttDomolab = Domolab.getMqttDomolab();
+            //mqttDomolab.connect();
+
+        }
+    }
+
+    private void testAndCreatMqttClient(){
+        /**
+         * Checking if the MQTT client is already set in the MQTT settings activity.
+         * If not set it with the stored data from last time
+         */
+        if (Domolab.mqttIsCreated()){
+            mqttDomolab = Domolab.getMqttDomolab();
+        } else {
+            try {
+
+                JSONObject obj = myJsonReader.jsonObjFromFileInternal(HomeActivity.this, "mqttCurrentSettings.json");
+                mServerAddr = obj.getString("MQTTServer");
+                mUsername = obj.getString("MQTTUsername");
+                mPwd = obj.getString("MQTTPassword");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                Toast.makeText(HomeActivity.this, "Not MQTT settings", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+            Domolab.creatMqtt(mUsername, mPwd, mServerAddr);
+            mqttDomolab = Domolab.getMqttDomolab();
+            try {
+                mqttDomolab.connect();
+            } catch (AlreadyConnectecException e) {
+                Toast.makeText(HomeActivity.this, "Couldn't connect to MQTT", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         }
     }
 }
