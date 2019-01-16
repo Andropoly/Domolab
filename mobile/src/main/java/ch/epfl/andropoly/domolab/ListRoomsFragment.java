@@ -81,9 +81,9 @@ public class ListRoomsFragment extends Fragment {
         try {
             if(mRoomAdapter == null) {
                 fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
-                jsonWriteFileInternal(getActivity(), "data_modified.json", fav_list);
+                jsonWriteFileInternal(getActivity(), "my_rooms.json", fav_list);
             } else
-                fav_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
+                fav_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

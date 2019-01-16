@@ -94,7 +94,7 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
 
         // Recover list from JSON file
         try {
-            room_def = jsonArrFromFileInternal(getActivity(), "data_modified.json");
+            room_def = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -109,7 +109,7 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         }
 
         room_def.put(new_room);
-        jsonWriteFileInternal(getActivity(), "data_modified.json", room_def);
+        jsonWriteFileInternal(getActivity(), "my_rooms.json", room_def);
     }
 
     private void fillSpinner(View view){
