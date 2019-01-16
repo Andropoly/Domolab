@@ -368,7 +368,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 String passwordMQTTDatabse = profile.child("MQTT").child("password").getValue(String.class);
                                                 String serverURIMQTTDatabse = profile.child("MQTT").child("serverURI").getValue(String.class);
 
-                                                if(!(HomeNameDatabse.equals("TBD") || usernameMQTTDatabse.equals("TBD") || passwordMQTTDatabse.equals("TBD") || serverURIMQTTDatabse.equals("TBD"))) {
+                                                if(!(HomeNameDatabse.equals("") || usernameMQTTDatabse.equals("") || passwordMQTTDatabse.equals("") || serverURIMQTTDatabse.equals(""))) {
                                                     needSettings = false;
                                                 }
 
@@ -476,25 +476,21 @@ public class LoginActivity extends AppCompatActivity {
 
         // adds all the necessary information to the new profile of the database
         private void addProfileToFirebaseDB() {
-            /*final ArrayList<String> emptyListRoom = new ArrayList<>();
-            emptyListRoom.add("Room");
-            final ArrayList<String> emptyListFav = new ArrayList<>();
-            emptyListFav.add("Kitchen");*/
 
             // JSON object representing one room
-            final JSONObject objRoom = new JSONObject();
+            /*final JSONObject objRoom = new JSONObject();
             try {
                 objRoom.put("Type", "Bedroom");
                 objRoom.put("Name", "MyRoom");
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             // JSON arrays containing several room objects
             final JSONArray roomsArray = new JSONArray();
             final JSONArray favsArray = new JSONArray();
-            roomsArray.put(objRoom);
-            favsArray.put(objRoom);
+            //roomsArray.put(objRoom);
+            //favsArray.put(objRoom);
 
             Log.d(TAG, "Rooms array init: " + roomsArray);
             Log.d(TAG, "Favs array init: " + favsArray);
@@ -504,15 +500,13 @@ public class LoginActivity extends AppCompatActivity {
                 @NonNull
                 @Override
                 public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                    mutableData.child("HomeName").setValue("TBD");
+                    mutableData.child("HomeName").setValue("");
                     mutableData.child("userID").setValue(mUser.getUid());
-                    //mutableData.child("listOfRooms").setValue(emptyListRoom);
-                    //mutableData.child("listOfFav").setValue(emptyListFav);
                     mutableData.child("Rooms").setValue(roomsArray.toString());
                     mutableData.child("Favorites").setValue(favsArray.toString());
-                    mutableData.child("MQTT").child("username").setValue("TBD");
-                    mutableData.child("MQTT").child("password").setValue("TBD");
-                    mutableData.child("MQTT").child("serverURI").setValue("TBD");
+                    mutableData.child("MQTT").child("username").setValue("");
+                    mutableData.child("MQTT").child("password").setValue("");
+                    mutableData.child("MQTT").child("serverURI").setValue("");
                     return Transaction.success(mutableData);
                 }
                 @Override
