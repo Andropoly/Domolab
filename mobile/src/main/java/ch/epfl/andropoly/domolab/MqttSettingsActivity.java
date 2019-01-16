@@ -118,36 +118,10 @@ public class MqttSettingsActivity extends AppCompatActivity {
                 View focusView = null;
 
                 if (isServerURIValid(mMqttServerURI)) {
-
-                        if (Domolab.mqttIsCreated()){
-                            if (Domolab.getMqttDomolab().mqttAndroidClient.isConnected()){
-                                Domolab.getMqttDomolab().disconnect();
-                            }
-                            //Domolab.getMqttDomolab().disconnect();
-                            //Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
-                            /*Domolab.getMqttDomolab().setServerUri(mMqttServerURI);
-                            Domolab.getMqttDomolab().setUsername(mMqttUsername);
-                            Domolab.getMqttDomolab().setPassword(mMqttPassword);*/
-                        } else {
-                            Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
-                            try {
-                                Domolab.getMqttDomolab().connect();
-                            } catch (AlreadyConnectecException e) {
-                                e.printStackTrace();
-                            }
+                    if (Domolab.mqttCreated) {
+                        if (Domolab.getMqttDomolab().mqttAndroidClient.isConnected()) {
+                            Domolab.getMqttDomolab().disconnect();
                         }
-                    } else {
-                        Domolab.creatMqtt(mMqttServerURI, mMqttUsername, mMqttPassword);
-                        try {
-                            Domolab.getMqttDomolab().connect();
-                        } catch (AlreadyConnectecException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    try {
-                        Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
-                    } catch (NotConnectedException e) {
-                        e.printStackTrace();
                     }
 
 

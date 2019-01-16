@@ -66,6 +66,7 @@ public class MqttDomolab{
 
             }
         });
+        Domolab.mqttCreated = true;
         /*
         try {
             connect();

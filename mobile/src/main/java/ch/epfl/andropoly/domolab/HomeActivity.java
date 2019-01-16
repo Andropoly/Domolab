@@ -52,10 +52,6 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
 
     private HomeFragment homeFragment;
     private ListRoomsFragment listRoomsFragment;
-    private MqttDomolab mqttDomolab;
-    private String mServerAddr;
-    private String mUsername;
-    private String mPwd;
 
     // MQTT variable
     private MqttDomolab mqttDomolab;
@@ -90,20 +86,23 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                 public void onChange() {
                     Toast.makeText(HomeActivity.this, "Welcome to your home: " + Domolab.HomeName_db + " !",
                             Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "Welcome "+ userID + " to your home: " + Domolab.HomeName_db + " !");
+                    Log.d(TAG, "Welcome " + userID + " to your home: " + Domolab.HomeName_db + " !");
                     Log.d(TAG, "Rooms info are contained in " + Domolab.roomsArray_db);
                     Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
 
                     setFragments();
+                }
+            });
+        }
 
         testAndCreatMqttClient();
         Domolab.MqttChanged.setListener(new BooleanVariable.ChangeListener() {
             @Override
             public void onChange() {
-                if (Domolab.MqttChanged.isBoolean()){
+                if (Domolab.MqttChanged.isBoolean()) {
                     mqttDomolab.setAllHouse();
                 } else {
-                    Domolab.creatMqtt(mServerAddr, mUsername, mPwd);
+                    Domolab.creatMqtt(Domolab.mqttSettings_db.get(2), Domolab.mqttSettings_db.get(0), Domolab.mqttSettings_db.get(1));
                     mqttDomolab = Domolab.getMqttDomolab();
                     try {
                         mqttDomolab.connect();
@@ -112,8 +111,8 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                     }
 
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -217,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SETTINGS) {
-            mqttDomolab.disconnect();
+            //mqttDomolab.disconnect();
             //mqttDomolab = Domolab.getMqttDomolab();
             //mqttDomolab.connect();
 
