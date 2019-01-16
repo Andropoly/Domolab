@@ -19,10 +19,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
 import static JsonUtilisties.myJsonReader.toggleDevices;
 
@@ -118,7 +122,14 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
                         e.printStackTrace();
                     }
 
+                    // Update database and send a message to MQTT
                     updateDatabase(device_obj);
+
+                    try {
+                        Domolab.getMqttDomolab().sendJsonToTopic(device_obj, "all/House");
+                    } catch (NotConnectedException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
