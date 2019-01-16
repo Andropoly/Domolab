@@ -59,17 +59,17 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
             profileKey = intent.getExtras().getString("PROFILEKEY");
         }
 
-        // gets the proper references for accessing the profile
-        /*database = Domolab.getDatabase();
-        profileGetRef = Domolab.getprofileGetRef();
-        profileRef = Domolab.getprofileRef();*/
-
         Domolab.DatabaseChanged.setListener(new BooleanVariable.ChangeListener() {
             @Override
             public void onChange() {
                 setLayoutWithDatabase();
             }
         });
+
+        // gets the proper references for accessing the profile
+        /*database = Domolab.getDatabase();
+        profileGetRef = Domolab.getprofileGetRef();
+        profileRef = Domolab.getprofileRef();*/
 
             // gathers the data contained in the profile in the database
             /*profileRef.addValueEventListener(new ValueEventListener() {
@@ -156,7 +156,7 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
         JSONObject JSONCredentials = new JSONObject();
 
         // deletes the saved credentials
-        myJsonReader.jsonWriteFileInternal(HomeActivity.this, "savedCredentials.json", JSONCredentials);
+        myJsonReader.jsonWriteFileInternal(HomeActivity.this, Domolab.savedCredentialsFile, JSONCredentials);
 
         // goes back to the loginActivity
         Intent LogoutIntent = new Intent(HomeActivity.this, LoginActivity.class);

@@ -1,6 +1,7 @@
 package ch.epfl.andropoly.domolab;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -12,9 +13,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import JsonUtilisties.myJsonReader;
 import MQTTsender.MqttDomolab;
 
 public class Domolab extends Application {
@@ -39,6 +42,14 @@ public class Domolab extends Application {
     public static String favsString_db;
     public static JSONArray roomsArray_db;
     public static JSONArray favsArray_db;
+
+    //JSON files related variables
+    public static String MyRoomFile = "my_rooms.json";
+    public static String MyFavFile = "my_favs.json";
+    public static String MyDevFile = "my_devs.json";
+    public static String savedCredentialsFile = "savedCredentials.json";
+    public static String mqttSettingsFile = "mqttCurrentSettings.json";
+    public static String MyHomenameFile = "currentHouse.json";
 
     @Override
     public void onCreate() {
@@ -81,9 +92,11 @@ public class Domolab extends Application {
                 String mqttUsername = dataSnapshot.child("MQTT").child("username").getValue(String.class);
                 String mqttPassword = dataSnapshot.child("MQTT").child("password").getValue(String.class);
                 String mqttServer = dataSnapshot.child("MQTT").child("serverURI").getValue(String.class);
+
                 mqttSettings_db.add(mqttUsername);
                 mqttSettings_db.add(mqttPassword);
                 mqttSettings_db.add(mqttServer);
+
                 roomsString_db = dataSnapshot.child("Rooms").getValue(String.class);
                 favsString_db = dataSnapshot.child("Favorites").getValue(String.class);
 
@@ -96,6 +109,8 @@ public class Domolab extends Application {
 
                 Log.d(TAG, "finished changing values");
 
+                saveDataInJsonFiles();
+
                 DatabaseChanged.setBoolean(!DatabaseChanged.isBoolean());
             }
 
@@ -107,6 +122,23 @@ public class Domolab extends Application {
     }
 
     public static boolean isAppListening() {return DatabaseChanged.isBoolean();    }
+
+    private static void saveDataInJsonFiles() {
+        JSONObject JSONHomeName_db = new JSONObject();
+        try {
+            JSONHomeName_db.put("HouseName", HomeName_db);
+            JSONArray JSONMqttSettings_db = new JSONArray(mqttSettings_db.toString());
+
+            myJsonReader.jsonWriteFileInternal(getContext(), MyHomenameFile , JSONHomeName_db);
+            myJsonReader.jsonWriteFileInternal(getContext(), MyRoomFile , roomsArray_db);
+            myJsonReader.jsonWriteFileInternal(getContext(), MyFavFile , favsArray_db);
+            myJsonReader.jsonWriteFileInternal(getContext(), mqttSettingsFile , JSONMqttSettings_db);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "modified internal files");
+    }
 
 }
 
