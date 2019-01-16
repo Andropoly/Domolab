@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.andropoly.domolab.Domolab;
 import ch.epfl.andropoly.domolab.R;
 
 import static JsonUtilisties.myJsonReader.isNameExist;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
+import static ch.epfl.andropoly.domolab.Domolab.MyRoomFile;
 
 public class DialogAddRoom extends AppCompatDialogFragment {
     private Spinner mTypeRoom;
@@ -92,7 +94,7 @@ public class DialogAddRoom extends AppCompatDialogFragment {
 
         // Recover list from JSON file
         try {
-            room_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
+            room_list = jsonArrFromFileInternal(getActivity(), MyRoomFile);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -111,7 +113,8 @@ public class DialogAddRoom extends AppCompatDialogFragment {
         }
 
         room_list.put(new_room);
-        jsonWriteFileInternal(getActivity(), "my_rooms.json", room_list);
+        Domolab.roomsArray_db = room_list;
+        jsonWriteFileInternal(getActivity(), MyRoomFile, room_list);
     }
 
     private void fillSpinner(View view){
