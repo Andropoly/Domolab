@@ -3,6 +3,7 @@ package ch.epfl.andropoly.domolab;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,18 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+
+import static JsonUtilisties.myJsonReader.toggleDevices;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHolder> {
     private final String TAG = this.getClass().getSimpleName();
@@ -20,11 +32,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
     private List<String> mList_name;
     private List<String> mList_type;
     private List<Integer> mList_state;
+    private String mRoomName;
 
-    DeviceAdapter(List<String> name, List<String> type, List<Integer> state){
+    DeviceAdapter(List<String> name, List<String> type, List<Integer> state, String room_name){
         this.mList_name = name;
         this.mList_type = type;
         this.mList_state = state;
+        this.mRoomName = room_name;
     }
 
     @Override
@@ -46,6 +60,23 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
         holder.display(mList_name.get(position), mList_type.get(position), mList_state.get(position));
     }
 
+    static public void updateDatabase(final JSONObject object){
+        DatabaseReference profileRef = Domolab.getprofileRef();
+        profileRef.runTransaction( new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                mutableData.child("Devices").setValue(object.toString());
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@android.support.annotation.Nullable DatabaseError databaseError,
+                                   boolean b, @android.support.annotation.Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
+    }
     class ItemViewHolder extends RecyclerView.ViewHolder {
         ItemViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -77,6 +108,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
                 public void onClick(View v) {
                     Toast.makeText(itemView.getContext(), "Toggle switch.",
                             Toast.LENGTH_SHORT).show();
+
+                    JSONObject device_obj = new JSONObject();
+                    String device_name = ((TextView) itemView.findViewById(R.id.txt_device)).getText().toString();
+
+                    try {
+                        device_obj = toggleDevices(itemView.getContext(), mRoomName, device_name);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    updateDatabase(device_obj);
                 }
             });
         }

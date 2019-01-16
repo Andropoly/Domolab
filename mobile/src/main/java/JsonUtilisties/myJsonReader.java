@@ -273,7 +273,7 @@ public class myJsonReader {
 
         jsonWriteFileInternal(context, filename, myDevices);
     }
-    public static void toggleDevices(Context context, String roomName, String deviceName
+    public static JSONObject toggleDevices(Context context, String roomName, String deviceName
                                         ) throws JSONException {
         /**
          * Edit a toggle device value to toggle this device in a particular room, name,.
@@ -296,6 +296,7 @@ public class myJsonReader {
         }
 
         jsonWriteFileInternal(context, filename, myDevices);
+        return myDevices;
     }
 
 
