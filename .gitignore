@@ -11,3 +11,4 @@
 .externalNativeBuild
 
 mobile/google-services\.json
+!mobile/src/main/assets/*
