@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import Dialog.DialogAddFavorite;
+import Dialog.DialogAddRoom;
+import Dialog.DialogEditRoom;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
     private final String TAG = this.getClass().getSimpleName();
@@ -99,20 +102,26 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
         private void openDialogAddingItem(AppCompatActivity activity, String item) {
             if(item.equals(activity.getResources().getString(R.string.add_room))) {
-                PopupAddingRoom popupAddingRoom = new PopupAddingRoom();
-                popupAddingRoom.show(activity.getSupportFragmentManager(), "Popup adding room");
+                DialogAddRoom dialogAddRoom = new DialogAddRoom();
+                dialogAddRoom.show(activity.getSupportFragmentManager(), "Dialog add room");
+            } else if(item.equals(activity.getResources().getString(R.string.add_favorite))) {
+                DialogAddFavorite dialogAddFavorite = new DialogAddFavorite();
+                dialogAddFavorite.show(activity.getSupportFragmentManager(), "Dialog add favorite");
             }
         }
 
         private void openDialogEditingItem(AppCompatActivity activity, String item, String name) {
+            int name_idx = mList_name.indexOf(name);
+            String type = mList_type.get(name_idx);
+
+            FragmentManager fragment = activity.getSupportFragmentManager();
+
             if(item.equals(activity.getResources().getString(R.string.add_room))) {
-                int name_idx = mList_name.indexOf(name);
-                String type = mList_type.get(name_idx);
-
-                FragmentManager fragment = activity.getSupportFragmentManager();
-                PopupEditRoom popupEditRoom = PopupEditRoom.newInstance(name, type);
-
-                popupEditRoom.show(fragment, "Popup editing room");
+                DialogEditRoom dialogEditRoom = DialogEditRoom.newInstance(name, type);
+                dialogEditRoom.show(fragment, "Dialog edit room");
+            } else if(item.equals(activity.getResources().getString(R.string.add_favorite))){
+                DialogEditRoom dialogEditRoom = DialogEditRoom.newInstance(name, type);
+                dialogEditRoom.show(fragment, "Dialog edit favorite");
             }
         }
 

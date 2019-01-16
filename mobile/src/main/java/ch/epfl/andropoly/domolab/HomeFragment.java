@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
         list_type.add("New");
 
         if(mHomeAdapter == null)
-            mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
+            mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_favorite));
     }
 
     public void updateAdapter(){

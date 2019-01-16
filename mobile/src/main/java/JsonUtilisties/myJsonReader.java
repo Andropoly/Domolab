@@ -168,7 +168,7 @@ public class myJsonReader {
         for(int i=0; i<room_list.length(); i++) {
             try {
                 if (room_list.getJSONObject(i).get(key_name).equals(btn_room_name)) {
-                    if(isNameExist(room_list, key_name, value_name))
+                    if(isNameExist(room_list, key_name, value_name) && !btn_room_name.equals(value_name))
                         room_list.getJSONObject(i).put(key_name, value_name + "'");
                     else
                         room_list.getJSONObject(i).put(key_name, value_name);
@@ -244,6 +244,25 @@ public class myJsonReader {
 
         jsonWriteFileInternal(context, filename, myDevices);
     }
+
+    public static JSONObject readDevicesRoom(Context context, String roomName) throws  JSONException {
+        /**
+         * Recover all devices of a given room
+         */
+
+        String filename = "my_devices.json";
+        JSONObject myDevices = null;
+
+        try {
+            myDevices = jsonObjFromFileInternal(context, filename);
+        } catch (IOException e) {
+            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
+            e.printStackTrace();
+        }
+
+        return myDevices.getJSONObject(roomName);
+    }
+
     public static void toggleDevices(Context context, String roomName, String deviceName
                                         ) throws JSONException {
         /**

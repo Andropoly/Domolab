@@ -123,6 +123,7 @@
 
     <!-- Strings related to json -->
     <string name="file_rooms_definition">roomsDefinition.json</string>
-    <string name="menu_settings">Settings</string>
     <string name="device_icon">device_icon</string>
+    <string name="json_list_rooms">list</string>
+    <string name="turn_off_all_devices">Turn off all devices</string>
 </resources>
