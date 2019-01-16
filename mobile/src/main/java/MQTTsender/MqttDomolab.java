@@ -3,6 +3,7 @@ package MQTTsender;
 import android.content.Context;
 import android.nfc.Tag;
 import android.util.Log;
+import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -28,13 +29,13 @@ import ch.epfl.andropoly.domolab.LoginActivity;
 public class MqttDomolab{
     public MqttAndroidClient mqttAndroidClient;
 
-    private String mServerUri = "tcp://m21.cloudmqtt.com:16233";
+    private String mServerUri = null;
 
     private final String clientId = MqttClient.generateClientId();
-    private final String mSubscriptionTopic = "sensor/+";
+    private final String mSubscriptionTopic = "sensor/#";
 
-    private String mUsername = "ywcheuja";
-    private String mPassword = "XD9nWtB5CRKl";
+    private String mUsername = null;
+    private String mPassword = null;
 
     public MqttDomolab(Context context, String username, String password, String serverUri){
         mUsername = username;
@@ -63,6 +64,29 @@ public class MqttDomolab{
 
             }
         });
+        /*
+        try {
+            connect();
+        } catch (AlreadyConnectecException e) {
+            e.printStackTrace();
+        }*/
+    }
+
+    public void setCallback(MqttCallbackExtended callback) {
+        mqttAndroidClient.setCallback(callback);
+    }
+
+    public void setUsername(String username){mUsername = username;}
+    public void setServerUri(String serverUri){mServerUri = serverUri;}
+    public void setPassword(String password){mPassword = password;}
+
+    public void reconnect(){
+        disconnect();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         try {
             connect();
         } catch (AlreadyConnectecException e) {
@@ -70,16 +94,27 @@ public class MqttDomolab{
         }
     }
 
-    public void setCallback(MqttCallbackExtended callback) {
-        mqttAndroidClient.setCallback(callback);
-    }
-
-    private void connect() throws AlreadyConnectecException{
+    public void connect() throws AlreadyConnectecException{
+        /**
+         * Connection function that is looking if the mqtt username and password are set or not
+         * Look if the server is already connected or not
+         */
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
-        mqttConnectOptions.setUserName(mUsername);
-        mqttConnectOptions.setPassword(mPassword.toCharArray());
+        if (mUsername == null || mUsername.isEmpty()){
+
+        } else{
+            mqttConnectOptions.setUserName(mUsername);
+        }
+        if (mPassword == null || mPassword.isEmpty()){
+
+        } else {
+            mqttConnectOptions.setPassword(mPassword.toCharArray());
+        }
+
+        Boolean a = mqttAndroidClient.isConnected();
+
 
         if (mqttAndroidClient.isConnected()){
             throw new AlreadyConnectecException();
@@ -96,8 +131,10 @@ public class MqttDomolab{
                         disconnectedBufferOptions.setPersistBuffer(false);
                         disconnectedBufferOptions.setDeleteOldestMessages(false);
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+
                         try {
                             subscribeToTopic(mSubscriptionTopic);
+                            sendMsgToTopic("An app is connected","status");
                         } catch (NotConnectedException e) {
                             e.printStackTrace();
                         }
@@ -121,17 +158,16 @@ public class MqttDomolab{
             mqttAndroidClient.disconnect(null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
         }
+
     }
 
 

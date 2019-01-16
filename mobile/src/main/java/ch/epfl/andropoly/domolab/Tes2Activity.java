@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
@@ -16,9 +17,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import JsonUtilisties.myJsonReader;
 
+import MQTTsender.AlreadyConnectecException;
 import MQTTsender.MqttDevice;
 import MQTTsender.MqttDomolab;
 import MQTTsender.NotConnectedException;
@@ -36,18 +39,30 @@ public class Tes2Activity extends AppCompatActivity {
         setContentView(R.layout.activity_tes2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Domolab.creatAndConnectMqtt( mUsername, mPwd, mServerAddr);
-        mqttDomolab =Domolab.getMqttDomolab();
-
-        JSONObject obj3 = new JSONObject();
+        /*
         try {
-            obj3 = myJsonReader.jsonObjFromFileInternal(Tes2Activity.this, "mqttCurrentSettings.json");
+            JSONObject obj = myJsonReader.jsonObjFromFileInternal(Tes2Activity.this, "mqttCurrentSettings.json");
+            mServerAddr = obj.getString("MQTTServer");
+            mUsername = obj.getString("MQTTUsername");
+            mPwd = obj.getString("MQTTPassword");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            Toast.makeText(Tes2Activity.this, "Not MQTT settings", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+
+
+        Domolab.creatMqtt( mUsername, mPwd, mServerAddr);
+        mqttDomolab =Domolab.getMqttDomolab();
+        try {
+            mqttDomolab.connect();
+        } catch (AlreadyConnectecException e) {
+            e.printStackTrace();
+        }*/
+
+        mqttDomolab =Domolab.getMqttDomolab();
+
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +72,7 @@ public class Tes2Activity extends AppCompatActivity {
                 JSONArray myObj = null;
                 try {
                     obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"testMyDevices.json");
-                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"myDevices.json", obj);
+                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"my_devices.json", obj);
                     MqttDevice.mqttSendDevice(Tes2Activity.this, mqttDomolab, "Parents Bedroom", "Right light");
                 } catch (IOException e) {
                     e.printStackTrace();

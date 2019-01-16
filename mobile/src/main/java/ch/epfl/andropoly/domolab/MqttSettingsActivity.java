@@ -26,6 +26,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import JsonUtilisties.myJsonReader;
+import MQTTsender.AlreadyConnectecException;
+import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
 public class MqttSettingsActivity extends AppCompatActivity {
 
@@ -47,6 +50,8 @@ public class MqttSettingsActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference profileGetRef;
     private DatabaseReference profileRef;
+
+    private MqttDomolab mqttDomolab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +112,34 @@ public class MqttSettingsActivity extends AppCompatActivity {
                     mMqttUsername = mUsername.getText().toString();
                     mMqttPassword = mPassword.getText().toString();
 
+
                     View focusView = null;
 
                     if (isServerURIValid(mMqttServerURI)) {
+
+                        if (Domolab.mqttIsCreated()){
+                            Domolab.getMqttDomolab().disconnect();
+
+                            try {
+                                Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
+                                Domolab.getMqttDomolab().connect();
+                            } catch (AlreadyConnectecException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
+                            try {
+                                Domolab.getMqttDomolab().connect();
+                            } catch (AlreadyConnectecException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        try {
+                            Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
+                        } catch (NotConnectedException e) {
+                            e.printStackTrace();
+                        }
+
 
                         try {
                             obj1.put("HouseName", mHouseName);
@@ -137,6 +167,7 @@ public class MqttSettingsActivity extends AppCompatActivity {
                             public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
                             {
                                 // starts the main activity after the settings have been saved
+
                                 Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
                                 intent.putExtra("USERID", userID);
                                 intent.putExtra("PROFILEKEY", profileKey);
@@ -146,7 +177,7 @@ public class MqttSettingsActivity extends AppCompatActivity {
 
                     // if the settings don't meet some requirements
                     } else {
-                        mServer.setError("Your server address is missing :");
+                        mServer.setError("Your server address is missing : or is too short");
                         focusView = mServer;
                         focusView.requestFocus();
                     }
@@ -173,8 +204,9 @@ public class MqttSettingsActivity extends AppCompatActivity {
 
     private boolean isServerURIValid(String serverURI) {
         //TODO: Replace this with your own logic
-        return serverURI.contains(":");
+        return (serverURI.contains(":") && serverURI.length()>4);
     }
+
 
 
 }
