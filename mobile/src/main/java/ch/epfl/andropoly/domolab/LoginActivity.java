@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,11 +70,13 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox mCheckBoxView;
     private boolean needSettings = true;
 
     // keep user credentials between two connections
     private JSONObject JSONCredential = new JSONObject();
     private boolean savedCredentials = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +101,29 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "look for saved credentials");
 
         // looks for existing JSON with saved credentials
+        lookForSavedCredentials();
+
+        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLoginRegistration(SIGN_IN);
+            }
+        });
+
+        Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
+        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLoginRegistration(REGISTER);
+            }
+        });
+
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void lookForSavedCredentials () {
         try {
             savedCredentials = true;
             JSONCredential = jsonObjFromFileInternal(LoginActivity.this, "savedCredentials.json");
@@ -118,29 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLoginRegistration(SIGN_IN);
-            }
-        });
-
-        Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
-        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLoginRegistration(REGISTER);
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
-
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -300,8 +305,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                 // creates a new profile in the database for the newly registered user
                                 profileRef = profileGetRef.push();
-                                addProfileToFirebaseDB();
                                 profileKey = profileRef.getKey();
+                                addProfileToFirebaseDB();
 
                                 mSuccess = true;
                                 mRunningThread = false;
@@ -363,7 +368,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 String passwordMQTTDatabse = profile.child("MQTT").child("password").getValue(String.class);
                                                 String serverURIMQTTDatabse = profile.child("MQTT").child("serverURI").getValue(String.class);
 
-                                                if(!(HomeNameDatabse.equals("TBD") || usernameMQTTDatabse.equals("TBD") || passwordMQTTDatabse.equals("TBD") || serverURIMQTTDatabse.equals("TBD"))) {
+                                                if(!(HomeNameDatabse.equals("") || usernameMQTTDatabse.equals("") || passwordMQTTDatabse.equals("") || serverURIMQTTDatabse.equals(""))) {
                                                     needSettings = false;
                                                 }
 
@@ -376,8 +381,8 @@ public class LoginActivity extends AppCompatActivity {
                                             // What to do if new user (nothing in the database)
                                             Log.d(TAG, "No corresponding profile in the database");
                                             profileRef = profileGetRef.push();
-                                            addProfileToFirebaseDB();
                                             profileKey = profileRef.getKey();
+                                            addProfileToFirebaseDB();
                                         }
 
                                         mRunningThread = false;
@@ -446,6 +451,9 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
 
+                // shares database info with the App
+                Domolab.setDatabaseApp(database, profileKey);
+
                 // shares the userID and the proper profile key with the called activity
                 intent.putExtra("PROFILEKEY", profileKey);
                 intent.putExtra("USERID", mUser.getUid());
@@ -468,25 +476,21 @@ public class LoginActivity extends AppCompatActivity {
 
         // adds all the necessary information to the new profile of the database
         private void addProfileToFirebaseDB() {
-            /*final ArrayList<String> emptyListRoom = new ArrayList<>();
-            emptyListRoom.add("Room");
-            final ArrayList<String> emptyListFav = new ArrayList<>();
-            emptyListFav.add("Kitchen");*/
 
             // JSON object representing one room
-            final JSONObject objRoom = new JSONObject();
+            /*final JSONObject objRoom = new JSONObject();
             try {
                 objRoom.put("Type", "Bedroom");
                 objRoom.put("Name", "MyRoom");
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             // JSON arrays containing several room objects
             final JSONArray roomsArray = new JSONArray();
             final JSONArray favsArray = new JSONArray();
-            roomsArray.put(objRoom);
-            favsArray.put(objRoom);
+            //roomsArray.put(objRoom);
+            //favsArray.put(objRoom);
 
             Log.d(TAG, "Rooms array init: " + roomsArray);
             Log.d(TAG, "Favs array init: " + favsArray);
@@ -496,15 +500,13 @@ public class LoginActivity extends AppCompatActivity {
                 @NonNull
                 @Override
                 public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                    mutableData.child("HomeName").setValue("TBD");
+                    mutableData.child("HomeName").setValue("");
                     mutableData.child("userID").setValue(mUser.getUid());
-                    //mutableData.child("listOfRooms").setValue(emptyListRoom);
-                    //mutableData.child("listOfFav").setValue(emptyListFav);
                     mutableData.child("Rooms").setValue(roomsArray.toString());
                     mutableData.child("Favorites").setValue(favsArray.toString());
-                    mutableData.child("MQTT").child("username").setValue("TBD");
-                    mutableData.child("MQTT").child("password").setValue("TBD");
-                    mutableData.child("MQTT").child("serverURI").setValue("TBD");
+                    mutableData.child("MQTT").child("username").setValue("");
+                    mutableData.child("MQTT").child("password").setValue("");
+                    mutableData.child("MQTT").child("serverURI").setValue("");
                     return Transaction.success(mutableData);
                 }
                 @Override

@@ -80,7 +80,8 @@ public class ListRoomsFragment extends Fragment {
 
         try {
                 room_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
