@@ -1,26 +1,23 @@
 package ch.epfl.andropoly.domolab;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
@@ -34,10 +31,9 @@ import java.util.List;
 
 import JsonUtilisties.myJsonReader;
 
-import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
+public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.PopupAddingRoomListener, PopupEditRoom.PopupEditRoomListener {
+    private final String TAG = this.getClass().getSimpleName();
 
-public class HomeActivity extends AppCompatActivity {
-    private final String TAG = "------" + this.getClass().getSimpleName() + "------";
     private final int SETTINGS = 1;
 
     private List<String> list_rooms = Arrays.asList(
@@ -55,6 +51,9 @@ public class HomeActivity extends AppCompatActivity {
     private DatabaseReference profileRef;
     private FirebaseDatabase database;
 
+    private HomeFragment homeFragment;
+    private ListRoomsFragment listRoomsFragment;
+
     //private GenericTypeIndicator<ArrayList<String>> ArrayListStringType = new GenericTypeIndicator<ArrayList<String>>() {};
     private String homename_db;
     private String userID_db;
@@ -66,30 +65,12 @@ public class HomeActivity extends AppCompatActivity {
     private JSONArray roomsArray_db;
     private JSONArray favsArray_db;
 
-
-    // Main code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        HomeFragment homeFragment = HomeFragment.newInstance("Hey", "Hello");
-        ListRoomsFragment listRoomsFragment = ListRoomsFragment.newInstance();
-        String fragmentTAG = getResources().getString(R.string.home_page);
-
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTAG);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.list_rooms_fragment, listRoomsFragment)
-                .commit();
-
-        if(fragment == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.home_fragment, homeFragment, fragmentTAG)
-                    .commit();
-        }
+        setFragments();
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
@@ -193,6 +174,26 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(LogoutIntent);
     }
 
+    private void setFragments(){
+        homeFragment = HomeFragment.newInstance();
+        listRoomsFragment = ListRoomsFragment.newInstance();
+        String fragmentTAG = getResources().getString(R.string.home_page);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTAG);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.list_rooms_fragment, listRoomsFragment)
+                .commit();
+
+        if(fragment == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.home_fragment, homeFragment)
+                    .commit();
+        }
+    }
+    
     private void setLayoutWithDatabase() {
         Toast.makeText(HomeActivity.this, "Welcome to your home: " + homename_db + " !",
                 Toast.LENGTH_LONG).show();
@@ -208,6 +209,17 @@ public class HomeActivity extends AppCompatActivity {
         // TODO: When HomeFragment is active, propose to logout instead of doing nothing
         if(this.getSupportFragmentManager().getBackStackEntryCount() != 0)
             super.onBackPressed();
+    }
+
+    public void allOffCallback(View view) {
+
+        Intent intent = new Intent(HomeActivity.this, Tes2Activity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void updateRoomAdapter() {
+        listRoomsFragment.updateAdapter();
     }
 
     @Override

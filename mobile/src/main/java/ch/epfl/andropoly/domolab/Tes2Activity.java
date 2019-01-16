@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +19,7 @@ import java.io.IOException;
 
 import JsonUtilisties.myJsonReader;
 
+import MQTTsender.MqttDevice;
 import MQTTsender.MqttDomolab;
 import MQTTsender.NotConnectedException;
 
@@ -56,10 +56,9 @@ public class Tes2Activity extends AppCompatActivity {
                 JSONObject obj2 = null;
                 JSONArray myObj = null;
                 try {
-                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"devices.json");
-
-                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this, "first.json", obj);
-                    obj2 = myJsonReader.jsonObjFromFileInternal( Tes2Activity.this,"sec.json");
+                    obj = myJsonReader.jsonObjFromFileAsset( Tes2Activity.this,"testMyDevices.json");
+                    myJsonReader.jsonWriteFileInternal(Tes2Activity.this,"myDevices.json", obj);
+                    MqttDevice.mqttSendDevice(Tes2Activity.this, mqttDomolab, "Parents Bedroom", "Right light");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
