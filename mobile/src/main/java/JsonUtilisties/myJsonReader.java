@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static ch.epfl.andropoly.domolab.Domolab.MyDevFile;
+
 public class myJsonReader {
     private static String stringFromFile(Context activityContext, String filename) throws IOException {
         InputStream is = activityContext.getAssets().open(filename);
@@ -168,7 +170,7 @@ public class myJsonReader {
         for(int i=0; i<room_list.length(); i++) {
             try {
                 if (room_list.getJSONObject(i).get(key_name).equals(btn_room_name)) {
-                    if(isNameExist(room_list, key_name, value_name))
+                    if(isNameExist(room_list, key_name, value_name) && !btn_room_name.equals(value_name))
                         room_list.getJSONObject(i).put(key_name, value_name + "'");
                     else
                         room_list.getJSONObject(i).put(key_name, value_name);
@@ -191,7 +193,7 @@ public class myJsonReader {
          * Edit a device string value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {
@@ -210,7 +212,7 @@ public class myJsonReader {
          * Edit a device int value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
 
@@ -230,7 +232,7 @@ public class myJsonReader {
          * Edit a device float value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {
@@ -250,7 +252,7 @@ public class myJsonReader {
          * Edit a toggle device value to toggle this device in a particular room, name,.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {

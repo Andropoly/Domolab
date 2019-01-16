@@ -1,4 +1,4 @@
-package ch.epfl.andropoly.domolab;
+package Dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,19 +21,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import ch.epfl.andropoly.domolab.R;
 
 import static JsonUtilisties.myJsonReader.isNameExist;
-import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
-import static android.support.constraint.Constraints.TAG;
 
-public class PopupAddingRoom extends AppCompatDialogFragment {
-    private Spinner typeRoom;
-    private EditText editRoomName;
-    private PopupAddingRoomListener mListener;
+public class DialogAddRoom extends AppCompatDialogFragment {
+    private Spinner mTypeRoom;
+    private EditText mEditRoomName;
+    private DialogAddRoomListener mListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,10 +45,10 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.popup_room, null);
+        View view = inflater.inflate(R.layout.dialog_room, null);
 
         builder.setView(view)
-                .setTitle("Adding room")
+                .setTitle("Add room")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -60,16 +58,16 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String type_room = typeRoom.getSelectedItem().toString();
-                        String room_name = editRoomName.getText().toString();
+                        String type_room = mTypeRoom.getSelectedItem().toString();
+                        String room_name = mEditRoomName.getText().toString();
 
                         addRoom(type_room, room_name);
                         mListener.updateRoomAdapter();
                     }
                 });
 
-        editRoomName = view.findViewById(R.id.edit_txt_room);
-        typeRoom = view.findViewById(R.id.spn_room_type);
+        mTypeRoom = view.findViewById(R.id.spn_room_type);
+        mEditRoomName = view.findViewById(R.id.edit_txt_room);
 
         fillSpinner(view);
 
@@ -81,10 +79,10 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         super.onAttach(context);
 
         try {
-            mListener = (PopupAddingRoomListener) context;
+            mListener = (DialogAddRoomListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    "must implement PopupAddingRoomListener");
+                    "must implement DialogAddRoomListener");
         }
     }
 
@@ -153,7 +151,7 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         sItems.setAdapter(adapter);
     }
 
-    public interface PopupAddingRoomListener {
+    public interface DialogAddRoomListener {
         void updateRoomAdapter();
     }
 }

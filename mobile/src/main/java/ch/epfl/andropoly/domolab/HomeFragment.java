@@ -25,6 +25,7 @@ import java.util.List;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
+import static ch.epfl.andropoly.domolab.Domolab.MyFavFile;
 
 public class HomeFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
@@ -83,11 +84,7 @@ public class HomeFragment extends Fragment {
         list_type.clear();
 
         try {
-            if(mHomeAdapter == null) {
-                fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
-                jsonWriteFileInternal(getActivity(), "data_modified.json", fav_list);
-            } else
-                fav_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
+            fav_list = jsonArrFromFileInternal(getActivity(), MyFavFile);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -119,11 +116,12 @@ public class HomeFragment extends Fragment {
         list_type.add("New");
 
         if(mHomeAdapter == null)
-            mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
+            mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_favorite));
+        else
+            mHomeAdapter.notifyDataSetChanged();
     }
 
     public void updateAdapter(){
         setHomeAdapter();
-        mHomeAdapter.notifyDataSetChanged();
     }
 }

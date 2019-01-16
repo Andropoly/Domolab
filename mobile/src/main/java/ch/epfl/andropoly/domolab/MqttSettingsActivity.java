@@ -62,8 +62,8 @@ public class MqttSettingsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button saveButton = (Button)findViewById(R.id.saveSettingsButton);
-        Button cancelButton = (Button)findViewById(R.id.cancelSettingButton);
+        Button saveButton = (Button) findViewById(R.id.saveSettingsButton);
+        Button cancelButton = (Button) findViewById(R.id.cancelSettingButton);
 
         mHouse = (EditText) findViewById(R.id.houseTextEdit);
         mServer = (EditText) findViewById(R.id.mqttServerTextEdit);
@@ -80,7 +80,7 @@ public class MqttSettingsActivity extends AppCompatActivity {
 
             // if more than two extras are given then it means that the calling activity is the Home activity
             // in order to modify the settings
-            if(intent.getExtras().size() > 2) {
+            if (intent.getExtras().size() > 2) {
 
                 callingActivity = "HomeActivity";
                 mqttSettings = intent.getExtras().getStringArrayList("MQTTSETTINGS");
@@ -92,32 +92,32 @@ public class MqttSettingsActivity extends AppCompatActivity {
                 mPassword.setText(mqttSettings.get(1));
                 mServer.setText(mqttSettings.get(2));
             }
+        }
 
-            // gets the proper references for accessing the profile
-            database = FirebaseDatabase.getInstance();
-            profileGetRef = database.getReference("profiles");
-            profileRef = profileGetRef.child(profileKey);
+        database = Domolab.getDatabase();
+        profileGetRef = Domolab.getprofileGetRef();
+        profileRef = Domolab.getprofileRef();
 
-            // save the settings
-            saveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /**
-                     * On save clicked, the value of the text are stored into a json file for further used.
-                     */
+        // save the settings
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * On save clicked, the value of the text are stored into a json file for further used.
+                 */
 
-                    JSONObject obj1 = new JSONObject();
-                    JSONObject obj2 = new JSONObject();
+                JSONObject obj1 = new JSONObject();
+                JSONObject obj2 = new JSONObject();
 
-                    mHouseName = mHouse.getText().toString();
-                    mMqttServerURI = mServer.getText().toString();
-                    mMqttUsername = mUsername.getText().toString();
-                    mMqttPassword = mPassword.getText().toString();
+                mHouseName = mHouse.getText().toString();
+                mMqttServerURI = mServer.getText().toString();
+                mMqttUsername = mUsername.getText().toString();
+                mMqttPassword = mPassword.getText().toString();
 
 
-                    View focusView = null;
+                View focusView = null;
 
-                    if (isServerURIValid(mMqttServerURI)) {
+                if (isServerURIValid(mMqttServerURI)) {
 
                         if (Domolab.mqttIsCreated()){
                             if (Domolab.getMqttDomolab().mqttAndroidClient.isConnected()){
@@ -136,39 +136,48 @@ public class MqttSettingsActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
+                    } else {
+                        Domolab.creatMqtt(mMqttServerURI, mMqttUsername, mMqttPassword);
                         try {
-                            Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
-                        } catch (NotConnectedException e) {
+                            Domolab.getMqttDomolab().connect();
+                        } catch (AlreadyConnectecException e) {
                             e.printStackTrace();
                         }
+                    }
+                    try {
+                        Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
+                    } catch (NotConnectedException e) {
+                        e.printStackTrace();
+                    }
 
 
-                        try {
-                            obj1.put("HouseName", mHouseName);
-                            obj2.put("MQTTServer", mMqttServerURI);
-                            obj2.put("MQTTUsername", mMqttUsername);
-                            obj2.put("MQTTPassword", mMqttPassword);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    try {
+                        obj1.put("HouseName", mHouseName);
+                        obj2.put("MQTTServer", mMqttServerURI);
+                        obj2.put("MQTTUsername", mMqttUsername);
+                        obj2.put("MQTTPassword", mMqttPassword);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
+                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
+
+                    // also modifies the profile in the databse
+                    profileRef.runTransaction(new Transaction.Handler() {
+                        @NonNull
+                        @Override
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            mutableData.child("HomeName").setValue(mHouseName);
+                            mutableData.child("MQTT").child("username").setValue(mMqttUsername);
+                            mutableData.child("MQTT").child("password").setValue(mMqttPassword);
+                            mutableData.child("MQTT").child("serverURI").setValue(mMqttServerURI);
+                            return Transaction.success(mutableData);
                         }
-                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
-                        myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
 
-                        // also modifies the profile in the databse
-                        profileRef.runTransaction( new Transaction.Handler() {
-                            @NonNull
-                            @Override
-                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                                mutableData.child("HomeName").setValue(mHouseName);
-                                mutableData.child("MQTT").child("username").setValue(mMqttUsername);
-                                mutableData.child("MQTT").child("password").setValue(mMqttPassword);
-                                mutableData.child("MQTT").child("serverURI").setValue(mMqttServerURI);
-                                return Transaction.success(mutableData);
-                            }
-                            @Override
-                            public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
-                            {
-                                // starts the main activity after the settings have been saved
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                            // starts the main activity after the settings have been saved
 
                                 if(callingActivity == "LoginActivity") {
                                     Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
@@ -187,14 +196,13 @@ public class MqttSettingsActivity extends AppCompatActivity {
                         });
 
                     // if the settings don't meet some requirements
-                    } else {
-                        mServer.setError("Your server address is missing : or is too short");
-                        focusView = mServer;
-                        focusView.requestFocus();
-                    }
+                } else {
+                    mServer.setError("Your server address is missing : or is too short");
+                    focusView = mServer;
+                    focusView.requestFocus();
                 }
-            });
-        }
+            }
+        });
 
         // cancels the changes of the settings
         cancelButton.setOnClickListener(new View.OnClickListener() {

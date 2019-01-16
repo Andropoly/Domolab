@@ -1,4 +1,4 @@
-package ch.epfl.andropoly.domolab;
+package Dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,21 +23,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.andropoly.domolab.R;
+
 import static JsonUtilisties.myJsonReader.deleteRoom;
 import static JsonUtilisties.myJsonReader.editRoom;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
 
-public class PopupEditRoom extends AppCompatDialogFragment {
-    private Spinner typeRoom;
-    private EditText editRoomName;
-    private PopupEditRoomListener mListener;
+public class DialogEditRoom extends AppCompatDialogFragment {
+    private Spinner mTypeRoom;
+    private EditText mEditRoomName;
+    private DialogEditRoomListener mListener;
 
-    public PopupEditRoom(){
+    public DialogEditRoom(){
         // Empty constructor required for DialogFragment
     }
 
-    static public PopupEditRoom newInstance(String name, String type){
-        PopupEditRoom fragment = new PopupEditRoom();
+    static public DialogEditRoom newInstance(String name, String type){
+        DialogEditRoom fragment = new DialogEditRoom();
         Bundle args = new Bundle();
 
         args.putString("btn_type_room", type);
@@ -57,10 +59,10 @@ public class PopupEditRoom extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.popup_room, null);
+        View view = inflater.inflate(R.layout.dialog_room, null);
 
         builder.setView(view)
-                .setTitle("Editing room")
+                .setTitle("Edit room")
                 .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
@@ -72,8 +74,8 @@ public class PopupEditRoom extends AppCompatDialogFragment {
                 .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String type_room = typeRoom.getSelectedItem().toString();
-                        String room_name = editRoomName.getText().toString();
+                        String type_room = mTypeRoom.getSelectedItem().toString();
+                        String room_name = mEditRoomName.getText().toString();
 
                         editRoom(getActivity(), "my_rooms.json", "Type", "Name", type_room, room_name, btn_room_name);
                         mListener.updateRoomAdapter();
@@ -86,8 +88,8 @@ public class PopupEditRoom extends AppCompatDialogFragment {
                     }
                 });
 
-        editRoomName = view.findViewById(R.id.edit_txt_room);
-        typeRoom = view.findViewById(R.id.spn_room_type);
+        mTypeRoom = view.findViewById(R.id.spn_room_type);
+        mEditRoomName = view.findViewById(R.id.edit_txt_room);
 
         fillItems(view, btn_type_room, btn_room_name);
 
@@ -153,14 +155,14 @@ public class PopupEditRoom extends AppCompatDialogFragment {
         super.onAttach(context);
 
         try {
-            mListener = (PopupEditRoomListener) context;
+            mListener = (DialogEditRoomListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    "must implement PopupEditingRoomListener");
+                    "must implement DialogEditRoomListener");
         }
     }
 
-    public interface PopupEditRoomListener {
+    public interface DialogEditRoomListener {
         void updateRoomAdapter();
     }
 }

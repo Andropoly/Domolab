@@ -1,22 +1,48 @@
 {
-  "List": [
+  "List" : [
     "Kitchen",
     "Bedroom",
-    "Bathroom"
+    "Living room",
+    "Bathroom",
+    "Garage",
+    "Cellar",
+    "Entrance",
+    "Other"
   ],
-
-  "Kitchen":{
-    "Icon": "Kitchen",
-    "Color": "#ffffff"
+  "Kitchen" : {
+    "Icon" : "table.png",
+    "Color" : "#ff33cc" // HTML COLOR
   },
-
-  "Bedroom": {
-    "Icon": "Bedroom",
-    "Color": "#ffffff"
+  "Bedroom" : {
+    "Icon" : "bed.png",
+    "Color" : "#ff33cc" // HTML COLOR
   },
-  "Bathroom":{
-    "Icon": "Bathroom",
-    "Color": "#ffffff"
+  "Living room" : {
+    "Icon" : "table.png",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "Bathroom" : {
+    "Icon" : "bathroom.png",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "Garage" : {
+    "Icon" : "",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "Cellar" : {
+    "Icon" : "",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "Entrance" : {
+    "Icon" : "",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "Other" : {
+    "Icon" : "",
+    "Color" : "#ff33cc" // HTML COLOR
+  },
+  "New" : {
+    "Icon" : "add.png",
+    "Color" : "#99ff99" // HTML COLOR
   }
-
 }
