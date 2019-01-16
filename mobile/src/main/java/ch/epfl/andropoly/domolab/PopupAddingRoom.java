@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static JsonUtilisties.myJsonReader.isNameExist;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
@@ -50,16 +51,15 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
 
         builder.setView(view)
                 .setTitle("Adding room")
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Log.e(TAG, String.valueOf(typeRoom));
                         String type_room = typeRoom.getSelectedItem().toString();
                         String room_name = editRoomName.getText().toString();
 
@@ -89,12 +89,12 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
     }
 
     private void addRoom(String type, String name){
-        JSONArray room_def = new JSONArray();
+        JSONArray room_list = new JSONArray();
         JSONObject new_room = new JSONObject();
 
         // Recover list from JSON file
         try {
-            room_def = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
+            room_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -102,14 +102,18 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         }
 
         try {
+            if(isNameExist(room_list, "name", name))
+                new_room.put("name", name + "'");
+            else
+                new_room.put("name", name);
+
             new_room.put("type", type);
-            new_room.put("name", name);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        room_def.put(new_room);
-        jsonWriteFileInternal(getActivity(), "my_rooms.json", room_def);
+        room_list.put(new_room);
+        jsonWriteFileInternal(getActivity(), "data_modified.json", room_list);
     }
 
     private void fillSpinner(View view){
@@ -144,12 +148,8 @@ public class PopupAddingRoom extends AppCompatDialogFragment {
         // Fill the spinner by setting an adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, spinnerArray);
 
-        Log.e(TAG, String.valueOf(spinnerArray));
-        Log.e(TAG, String.valueOf(adapter));
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner sItems = (Spinner) view.findViewById(R.id.spn_room_type);
-        Log.e(TAG, String.valueOf(sItems));
         sItems.setAdapter(adapter);
     }
 

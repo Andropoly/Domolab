@@ -23,10 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
+import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
+import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
 
 public class HomeFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
-    private static RecyclerView.Adapter mHomeAdapter;
+
+    List<String> list_type = new ArrayList<String>();
+    List<String> list_name = new ArrayList<String>();
+    public static RecyclerView.Adapter mHomeAdapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -41,7 +46,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHomeAdapter = this.setAdapter();
+        setHomeAdapter();
     }
 
     @Override
@@ -70,17 +75,19 @@ public class HomeFragment extends Fragment {
         super.onDetach();
     }
 
-    @NonNull
-    @Contract(" -> new")
-    private RecyclerView.Adapter setAdapter(){
+    private void setHomeAdapter(){
         JSONArray fav_list = new JSONArray();
-        JSONObject room_obj = new JSONObject();
-        List<String> list_type = new ArrayList<String>();
-        List<String> list_name = new ArrayList<String>();
+        JSONObject fav_obj = new JSONObject();
 
-        // Recover list from JSON file
+        list_name.clear();
+        list_type.clear();
+
         try {
-            fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
+            if(mHomeAdapter == null) {
+                fav_list = jsonArrFromFileAsset(getActivity(), "data.json");
+                jsonWriteFileInternal(getActivity(), "data_modified.json", fav_list);
+            } else
+                fav_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -90,27 +97,33 @@ public class HomeFragment extends Fragment {
         // Fill array with JSON array
         for(int i=0; i<fav_list.length(); i++){
             try {
-                room_obj = fav_list.getJSONObject(i);
+                fav_obj = fav_list.getJSONObject(i);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             try {
-                list_type.add(room_obj.getString("type"));
+                list_type.add(fav_obj.getString("type"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             try {
-                list_name.add(room_obj.getString("name"));
+                list_name.add(fav_obj.getString("name"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-        list_type.add("New");
         list_name.add("New");
+        list_type.add("New");
 
-        return new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_favorite));
+        if(mHomeAdapter == null)
+            mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
+    }
+
+    public void updateAdapter(){
+        setHomeAdapter();
+        mHomeAdapter.notifyDataSetChanged();
     }
 }

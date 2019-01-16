@@ -2,8 +2,10 @@ package ch.epfl.andropoly.domolab;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +59,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
                 @Override
                 public void onClick(View v) {
                     TextView txt_room = (TextView) itemView.findViewById(R.id.txt_room);
-                    RoomFragment roomFragment = RoomFragment.newInstance("Kitchen", txt_room.getText().toString());
+
+                    int name_idx = mList_name.indexOf(txt_room.getText().toString());
+                    String type = mList_type.get(name_idx);
+
+                    RoomFragment roomFragment = RoomFragment.newInstance(type, txt_room.getText().toString());
                     AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
 
                     if(txt_room.getText().toString().equals("New")) {
@@ -83,9 +89,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
                     AppCompatActivity activity = (AppCompatActivity) itemView.getContext();
 
                     if(!txt_room.getText().toString().equals("New")) {
-                        openDialogEditingItem(activity, mItem, txt_room.toString());
-                        /*ItemRecording.remList_rooms(txt_room.getText().toString());
-                        ListRoomsFragment.updateAdapter();*/
+                        openDialogEditingItem(activity, mItem, txt_room.getText().toString());
                     }
 
                     return false;
@@ -101,10 +105,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         }
 
         private void openDialogEditingItem(AppCompatActivity activity, String item, String name) {
-            /*if(item.equals(activity.getResources().getString(R.string.add_room))) {
-                PopupEditRoom popupEditRoom = new PopupEditRoom(name, "Kitchen");
-                popupEditRoom.show(activity.getSupportFragmentManager(), "Popup editing room");
-            }*/
+            if(item.equals(activity.getResources().getString(R.string.add_room))) {
+                int name_idx = mList_name.indexOf(name);
+                String type = mList_type.get(name_idx);
+
+                FragmentManager fragment = activity.getSupportFragmentManager();
+                PopupEditRoom popupEditRoom = PopupEditRoom.newInstance(name, type);
+
+                popupEditRoom.show(fragment, "Popup editing room");
+            }
         }
 
         void display(String type, String name) {
