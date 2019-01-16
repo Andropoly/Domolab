@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.epfl.andropoly.domolab.Domolab;
 import ch.epfl.andropoly.domolab.HomeActivity;
 import ch.epfl.andropoly.domolab.R;
 
@@ -49,7 +50,7 @@ public class DialogAddFavorite extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_favorite, null);
+        final View view = inflater.inflate(R.layout.dialog_favorite, null);
 
         builder.setView(view)
                 .setTitle("Add favorite")
@@ -83,7 +84,25 @@ public class DialogAddFavorite extends AppCompatDialogFragment {
         mRoomName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                fillSpinnerDevices(selectedItemView);
+                JSONArray array = new JSONArray();
+
+                array = getDevices(parentView.getSelectedItem().toString());
+
+                // Fill the spinner by setting an adapter
+                List<String> spinnerArray =  new ArrayList<String>();
+                for(int i=0; i<array.length(); i++){
+                    try {
+                        spinnerArray.add(array.get(i).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, spinnerArray);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                Spinner sItems = (Spinner) view.findViewById(R.id.spn_favorite_device);
+                sItems.setAdapter(adapter);
             }
 
             @Override
@@ -108,8 +127,8 @@ public class DialogAddFavorite extends AppCompatDialogFragment {
         }
     }
 
-    private void addRoom(String type, String name){
-        JSONArray room_list = new JSONArray();
+    private void addFavorite(String device_type, String device_name, String room_name){
+        /*JSONArray room_list = new JSONArray();
         JSONObject new_room = new JSONObject();
 
         // Recover list from JSON file
@@ -133,7 +152,7 @@ public class DialogAddFavorite extends AppCompatDialogFragment {
         }
 
         room_list.put(new_room);
-        jsonWriteFileInternal(getActivity(), "my_rooms.json", room_list);
+        jsonWriteFileInternal(getActivity(), "my_rooms.json", room_list);*/
     }
 
     private void fillSpinnerRooms(View view){
@@ -165,8 +184,18 @@ public class DialogAddFavorite extends AppCompatDialogFragment {
         sItems.setAdapter(adapter);
     }
 
-    private void fillSpinnerDevices(View view){
+    private JSONArray getDevices(String room_fav){
         Toast.makeText(getContext(), "Fill devices spinner", Toast.LENGTH_LONG).show();
+
+        JSONArray devicesList = new JSONArray();
+
+        try {
+            devicesList = Domolab.devicesObject_db.getJSONArray(room_fav);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return devicesList;
     }
 
     public interface DialogAddFavoriteListener {

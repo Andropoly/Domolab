@@ -126,7 +126,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
                     updateDatabase(device_obj);
 
                     try {
-                        Domolab.getMqttDomolab().sendJsonToTopic(device_obj, "all/House");
+                        if(Domolab.getMqttDomolab() != null)
+                            Domolab.getMqttDomolab().sendJsonToTopic(device_obj, "all/House");
                     } catch (NotConnectedException e) {
                         e.printStackTrace();
                     }
