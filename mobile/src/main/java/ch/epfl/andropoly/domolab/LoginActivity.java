@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,11 +70,13 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox mCheckBoxView;
     private boolean needSettings = true;
 
     // keep user credentials between two connections
     private JSONObject JSONCredential = new JSONObject();
     private boolean savedCredentials = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +141,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
 
 
     }
@@ -421,7 +427,9 @@ public class LoginActivity extends AppCompatActivity {
             // if user correctly signed in
             if (success) {
                 // removes the listener on firebase database
-                profileGetRef.removeEventListener(listener);
+                if(listener != null) {
+                    profileGetRef.removeEventListener(listener);
+                }
 
                 // if some mqtt settings were missing, start the settings activity to set them
                 if (needSettings) {
