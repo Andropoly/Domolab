@@ -80,10 +80,10 @@ public class ListRoomsFragment extends Fragment {
 
         try {
             if(mRoomAdapter == null) {
-                room_list = jsonArrFromFileAsset(getActivity(), "data.json");
-                jsonWriteFileInternal(getActivity(), "data_modified.json", room_list);
+                room_list = jsonArrFromFileAsset(getActivity(), "testRoom.json");
+                jsonWriteFileInternal(getActivity(), "my_rooms.json", room_list);
             } else
-                room_list = jsonArrFromFileInternal(getActivity(), "data_modified.json");
+                room_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -99,13 +99,13 @@ public class ListRoomsFragment extends Fragment {
             }
 
             try {
-                list_type.add(room_obj.getString("type"));
+                list_type.add(room_obj.getString("Type"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             try {
-                list_name.add(room_obj.getString("name"));
+                list_name.add(room_obj.getString("Name"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

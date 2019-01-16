@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,9 +62,10 @@ public class PopupEditRoom extends AppCompatDialogFragment {
         builder.setView(view)
                 .setTitle("Editing room")
                 .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteRoom(getActivity(), "data_modified.json","name", btn_room_name);
+                        deleteRoom(getActivity(), "my_rooms.json","Name", btn_room_name);
                         mListener.updateRoomAdapter();
                     }
                 })
@@ -72,7 +75,7 @@ public class PopupEditRoom extends AppCompatDialogFragment {
                         String type_room = typeRoom.getSelectedItem().toString();
                         String room_name = editRoomName.getText().toString();
 
-                        editRoom(getActivity(), "data_modified.json", "type", "name", type_room, room_name, btn_room_name);
+                        editRoom(getActivity(), "my_rooms.json", "Type", "Name", type_room, room_name, btn_room_name);
                         mListener.updateRoomAdapter();
                     }
                 })
@@ -98,7 +101,7 @@ public class PopupEditRoom extends AppCompatDialogFragment {
 
         // Recover list from JSON file
         try {
-            room_def = jsonObjFromFileAsset(getActivity(), getString(R.string.file_rooms_definition));
+            room_def = jsonObjFromFileAsset(getActivity(), "rooms.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -107,7 +110,7 @@ public class PopupEditRoom extends AppCompatDialogFragment {
 
         // Fill array with JSON object
         try {
-            room_list = room_def.getJSONArray(getString(R.string.json_list_rooms));
+            room_list = room_def.getJSONArray("List");
         } catch (JSONException e) {
             e.printStackTrace();
         }

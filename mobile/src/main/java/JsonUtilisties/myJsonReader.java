@@ -1,6 +1,8 @@
 package JsonUtilisties;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -113,6 +115,7 @@ public class myJsonReader {
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static void deleteRoom(Context context, String filename, String key, String value){
         /**
          * Delete the room from the JSON filename by checking if the value is used with the key.

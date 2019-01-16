@@ -103,13 +103,13 @@ public class HomeFragment extends Fragment {
             }
 
             try {
-                list_type.add(fav_obj.getString("type"));
+                list_type.add(fav_obj.getString("Type"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             try {
-                list_name.add(fav_obj.getString("name"));
+                list_name.add(fav_obj.getString("Name"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
