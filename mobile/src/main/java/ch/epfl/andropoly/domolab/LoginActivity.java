@@ -101,6 +101,29 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "look for saved credentials");
 
         // looks for existing JSON with saved credentials
+        lookForSavedCredentials();
+
+        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLoginRegistration(SIGN_IN);
+            }
+        });
+
+        Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
+        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLoginRegistration(REGISTER);
+            }
+        });
+
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void lookForSavedCredentials () {
         try {
             savedCredentials = true;
             JSONCredential = jsonObjFromFileInternal(LoginActivity.this, "savedCredentials.json");
@@ -122,31 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLoginRegistration(SIGN_IN);
-            }
-        });
-
-        Button mEmailRegisterButton = (Button) findViewById(R.id.email_register_button);
-        mEmailRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLoginRegistration(REGISTER);
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
-
-
-
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -306,8 +305,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                 // creates a new profile in the database for the newly registered user
                                 profileRef = profileGetRef.push();
-                                addProfileToFirebaseDB();
                                 profileKey = profileRef.getKey();
+                                addProfileToFirebaseDB();
 
                                 mSuccess = true;
                                 mRunningThread = false;
@@ -382,8 +381,8 @@ public class LoginActivity extends AppCompatActivity {
                                             // What to do if new user (nothing in the database)
                                             Log.d(TAG, "No corresponding profile in the database");
                                             profileRef = profileGetRef.push();
-                                            addProfileToFirebaseDB();
                                             profileKey = profileRef.getKey();
+                                            addProfileToFirebaseDB();
                                         }
 
                                         mRunningThread = false;
@@ -451,6 +450,9 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "Save credentials in internal memory:" + JSONCredential);
                 myJsonReader.jsonWriteFileInternal(LoginActivity.this, "savedCredentials.json", JSONCredential);
+
+                // shares database info with the App
+                Domolab.setDatabaseApp(database, profileKey);
 
                 // shares the userID and the proper profile key with the called activity
                 intent.putExtra("PROFILEKEY", profileKey);

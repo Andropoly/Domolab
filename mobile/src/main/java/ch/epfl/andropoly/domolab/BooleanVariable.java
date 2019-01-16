@@ -1,14 +1,14 @@
 package ch.epfl.andropoly.domolab;
 
-public class BooVariable {
+public class BooleanVariable {
     private boolean boo = false;
     private ChangeListener listener;
 
-    public boolean isBoo() {
+    public boolean isBoolean() {
         return boo;
     }
 
-    public void setBoo(boolean boo) {
+    public void setBoolean(boolean boo) {
         this.boo = boo;
         if (listener != null) listener.onChange();
     }
