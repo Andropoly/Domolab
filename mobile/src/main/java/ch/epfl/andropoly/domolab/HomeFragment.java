@@ -117,10 +117,11 @@ public class HomeFragment extends Fragment {
 
         if(mHomeAdapter == null)
             mHomeAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_favorite));
+        else
+            mHomeAdapter.notifyDataSetChanged();
     }
 
     public void updateAdapter(){
         setHomeAdapter();
-        mHomeAdapter.notifyDataSetChanged();
     }
 }

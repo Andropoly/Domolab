@@ -114,10 +114,11 @@ public class ListRoomsFragment extends Fragment {
 
         if(mRoomAdapter == null)
             mRoomAdapter = new ItemAdapter(list_type, list_name, getResources().getString(R.string.add_room));
+        else
+            mRoomAdapter.notifyDataSetChanged();
     }
 
     public void updateAdapter(){
         setRoomAdapter();
-        mRoomAdapter.notifyDataSetChanged();
     }
 }

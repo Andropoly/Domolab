@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
-        ItemViewHolder(@NonNull View itemView) {
+        ItemViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             // Add click function on the image
@@ -54,7 +55,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
             img_device.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Toast.makeText(itemView.getContext(), "Click image",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -63,7 +65,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
             txt_device.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Toast.makeText(itemView.getContext(), "Click text",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -72,7 +75,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ItemViewHo
             sw_device.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-
+                    Toast.makeText(itemView.getContext(), "Toggle switch.",
+                            Toast.LENGTH_SHORT).show();
                 }
             });
         }

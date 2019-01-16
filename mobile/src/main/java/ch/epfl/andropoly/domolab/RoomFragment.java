@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +57,8 @@ public class RoomFragment extends Fragment {
         View layout = inflater.inflate(R.layout.fragment_room, container, false);
 
         setDeviceAdapter();
+        TextView txt_room_name = (TextView) layout.findViewById(R.id.txt_room);
+        txt_room_name.setText(room_name);
 
         //private RecordingAdapter adapter;
         RecyclerView recyclerView = (RecyclerView) layout.findViewById(R.id.list_devices);
@@ -99,30 +102,35 @@ public class RoomFragment extends Fragment {
             e.printStackTrace();
         }
 
-        for(int i=0; i<device_list_room.length(); i++){
-            try {
-                list_name.add(device_list_room.getString(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(device_list_room.length() != 0) {
+            for (int i = 0; i < device_list_room.length(); i++) {
+                try {
+                    list_name.add(device_list_room.getString(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Fill list_type and list_state with the corresponding name
+            for (int i = 0; i < device_list_room.length(); i++) {
+                try {
+                    list_type.add(all_device_obj.getJSONObject(list_name.get(i)).getString("Type"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    list_state.add(all_device_obj.getJSONObject(list_name.get(i)).getJSONObject("Inputs").getInt("Toggle"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        // Fill list_type and list_state with the corresponding name
-        for(int i=0; i<device_list_room.length(); i++){
-            try {
-                list_type.add(all_device_obj.getJSONObject(list_name.get(i)).getString("Type"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        mDeviceAdapter = new DeviceAdapter(list_name, list_type, list_state);
+    }
 
-            try {
-                list_state.add(all_device_obj.getJSONObject(list_name.get(i)).getJSONObject("Input").getInt("Toggle"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(mDeviceAdapter == null)
-            mDeviceAdapter = new DeviceAdapter(list_name, list_type, list_state);
+    public void updateAdapter(){
+        setDeviceAdapter();
     }
 }

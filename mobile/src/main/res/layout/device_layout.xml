@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="75dp"
+        android:layout_height="50dp"
         android:layout_marginStart="@dimen/spacer"
         android:layout_marginLeft="@dimen/spacer"
         android:layout_marginTop="@dimen/spacer"
         android:layout_marginEnd="@dimen/spacer"
         android:layout_marginRight="@dimen/spacer"
         android:orientation="horizontal"
+        android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,25 +24,27 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:clickable="true"
+            android:contentDescription="@string/device_icon"
             android:focusable="true"
+            android:layout_gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/penguin"
-            android:contentDescription="@string/device_icon" />
+            app:srcCompat="@drawable/penguin" />
 
         <TextView
             android:id="@+id/txt_device"
             android:layout_width="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="4" />
+            android:layout_weight="4"
+            android:clickable="true"
+            android:focusable="true" />
 
         <Switch
             android:id="@+id/sw_device"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1" />
     </LinearLayout>
 

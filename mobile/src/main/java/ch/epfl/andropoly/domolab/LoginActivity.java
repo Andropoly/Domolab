@@ -515,6 +515,8 @@ public class LoginActivity extends AppCompatActivity {
                 Room1Devices.put("Right lamp", device1);
                 Room1Devices.put("Left heat", device2);
 
+                Room1List.put(0, "Right lamp");
+                Room1List.put(1, "Left heat");
                 Room1Devices.put("List", Room1List);
                 Room2Devices.put("List", Room2List);
 
