@@ -490,6 +490,8 @@ public class LoginActivity extends AppCompatActivity {
             final JSONObject device2 = new JSONObject();
             final JSONObject Room1Devices = new JSONObject();
             final JSONObject Room2Devices = new JSONObject();
+            final JSONArray Room1List = new JSONArray();
+            final JSONArray Room2List = new JSONArray();
             final JSONObject AllRoomsDevices = new JSONObject();
 
             try {
@@ -512,6 +514,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 Room1Devices.put("Right lamp", device1);
                 Room1Devices.put("Left heat", device2);
+
+                Room1Devices.put("List", Room1List);
+                Room2Devices.put("List", Room2List);
 
                 AllRoomsDevices.put("MyKitchen", Room2Devices);
                 AllRoomsDevices.put("MyBedroom", Room1Devices);

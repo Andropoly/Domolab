@@ -49,7 +49,7 @@ public class Domolab extends Application {
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";
     public static String MyFavFile = "my_favs.json";
-    public static String MyDevFile = "my_devs.json";
+    public static String MyDevFile = "my_devices.json";
     public static String savedCredentialsFile = "savedCredentials.json";
     public static String mqttSettingsFile = "mqttCurrentSettings.json";
     public static String MyHomenameFile = "currentHouse.json";
