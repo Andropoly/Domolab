@@ -26,7 +26,7 @@ public class Domolab extends Application {
     // mqtt private variables
     private static Domolab mContext;
     private static MqttDomolab mqttDomolab;
-    private static Boolean mqttCreated = false;
+    public static Boolean mqttCreated = false;
 
     // database private variables
     private static FirebaseDatabase database;
@@ -34,6 +34,8 @@ public class Domolab extends Application {
     private static DatabaseReference profileGetRef;
 
     public static BooleanVariable DatabaseChanged = new BooleanVariable();
+    public static BooleanVariable MqttChanged = new BooleanVariable();
+    public static BooleanVariable TempChanged = new BooleanVariable();
     public static boolean isListening = false;
 
     // Home global variables
@@ -46,6 +48,7 @@ public class Domolab extends Application {
     public static JSONArray roomsArray_db;
     public static JSONArray favsArray_db;
     public static JSONObject devicesObject_db;
+    public static double temp;
 
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";

@@ -2,9 +2,18 @@ package MQTTsender;
 
 import android.content.Context;
 import android.nfc.Tag;
+import android.support.annotation.NonNull;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.annotations.Nullable;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -23,6 +32,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
+import JsonUtilisties.myJsonReader;
 import ch.epfl.andropoly.domolab.Domolab;
 import ch.epfl.andropoly.domolab.LoginActivity;
 
@@ -64,6 +74,7 @@ public class MqttDomolab{
 
             }
         });
+        Domolab.mqttCreated = true;
         /*
         try {
             connect();
@@ -113,14 +124,13 @@ public class MqttDomolab{
             mqttConnectOptions.setPassword(mPassword.toCharArray());
         }
 
-        Boolean a = mqttAndroidClient.isConnected();
+        //Boolean a = mqttAndroidClient.isConnected();
 
 
-        if (mqttAndroidClient.isConnected()){
+        if (false){
             throw new AlreadyConnectecException();
         } else {
             try {
-
                 mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
@@ -135,6 +145,8 @@ public class MqttDomolab{
                         try {
                             subscribeToTopic(mSubscriptionTopic);
                             sendMsgToTopic("An app is connected","status");
+                            Domolab.MqttChanged.setBoolean(true);
+
                         } catch (NotConnectedException e) {
                             e.printStackTrace();
                         }
@@ -158,6 +170,7 @@ public class MqttDomolab{
             mqttAndroidClient.disconnect(null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
+                    Domolab.MqttChanged.setBoolean(false);
                 }
 
                 @Override
@@ -313,6 +326,72 @@ public class MqttDomolab{
             throw new NotConnectedException();
         }
 
+    }
+
+    public void setAllHouse(){
+
+        try {
+            subscribeToTopic("#");
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
+        mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                String[] topicArr = topic.split("/");
+                switch (topicArr[0]){
+                    case "get":
+                        switch (topicArr[1]){
+                            case "allHouse":
+                                final JSONObject obj = new JSONObject(message.toString());
+                                //TODO: add obj to firebase
+                                DatabaseReference profileRef = Domolab.getprofileRef();
+                                profileRef.runTransaction( new Transaction.Handler() {
+                                    @NonNull
+                                    @Override
+                                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+
+                                        mutableData.child("Devices").setValue(obj.toString());
+                                        return Transaction.success(mutableData);
+                                    }
+                                    @Override
+                                    public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                                    {
+                                    }
+                                });
+                                break;
+                            case"temp":
+                                final JSONObject obj2 = new JSONObject(message.toString());
+                                Domolab.temp = obj2.getDouble("Temp");
+                                Domolab.TempChanged.setBoolean(!Domolab.TempChanged.isBoolean());
+                                break;
+                        }
+                        break;
+
+                }
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+        try {
+            sendMsgToTopic("{\"allHouse\":\"start\"}}", "all/House");
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
     }
 }
 
