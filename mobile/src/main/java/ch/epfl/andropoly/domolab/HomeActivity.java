@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -207,6 +209,12 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
         // TODO: When HomeFragment is active, propose to logout instead of doing nothing
         if(this.getSupportFragmentManager().getBackStackEntryCount() != 0)
             super.onBackPressed();
+    }
+
+    public void allOffCallback(View view) {
+
+        Intent intent = new Intent(HomeActivity.this, Tes2Activity.class);
+        startActivity(intent);
     }
 
     @Override
