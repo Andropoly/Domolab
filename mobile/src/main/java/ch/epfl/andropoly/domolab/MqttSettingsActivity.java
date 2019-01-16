@@ -60,8 +60,8 @@ public class MqttSettingsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button saveButton = (Button)findViewById(R.id.saveSettingsButton);
-        Button cancelButton = (Button)findViewById(R.id.cancelSettingButton);
+        Button saveButton = (Button) findViewById(R.id.saveSettingsButton);
+        Button cancelButton = (Button) findViewById(R.id.cancelSettingButton);
 
         mHouse = (EditText) findViewById(R.id.houseTextEdit);
         mServer = (EditText) findViewById(R.id.mqttServerTextEdit);
@@ -113,46 +113,62 @@ public class MqttSettingsActivity extends AppCompatActivity {
                 mMqttPassword = mPassword.getText().toString();
 
 
-                    View focusView = null;
+                View focusView = null;
 
                 if (isServerURIValid(mMqttServerURI)) {
 
-                        if (Domolab.mqttIsCreated()){
-                            Domolab.getMqttDomolab().disconnect();
-
-                            try {
-                                Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
-                                Domolab.getMqttDomolab().connect();
-                            } catch (AlreadyConnectecException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
-                            try {
-                                Domolab.getMqttDomolab().connect();
-                            } catch (AlreadyConnectecException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        try {
-                            Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
-                        } catch (NotConnectedException e) {
-                            e.printStackTrace();
-                        }
-
+                    if (Domolab.mqttIsCreated()) {
+                        Domolab.getMqttDomolab().disconnect();
 
                         try {
-                            obj1.put("HouseName", mHouseName);
-                            obj2.put("MQTTServer", mMqttServerURI);
-                            obj2.put("MQTTUsername", mMqttUsername);
-                            obj2.put("MQTTPassword", mMqttPassword);
-                        } catch (JSONException e) {
+                            Domolab.creatMqtt(mMqttServerURI, mMqttUsername, mMqttPassword);
+                            Domolab.getMqttDomolab().connect();
+                        } catch (AlreadyConnectecException e) {
                             e.printStackTrace();
                         }
+                    } else {
+                        Domolab.creatMqtt(mMqttServerURI, mMqttUsername, mMqttPassword);
+                        try {
+                            Domolab.getMqttDomolab().connect();
+                        } catch (AlreadyConnectecException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        Domolab.getMqttDomolab().sendMsgToTopic("An app is connected", "status");
+                    } catch (NotConnectedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    try {
+                        obj1.put("HouseName", mHouseName);
+                        obj2.put("MQTTServer", mMqttServerURI);
+                        obj2.put("MQTTUsername", mMqttUsername);
+                        obj2.put("MQTTPassword", mMqttPassword);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "currentHouse.json", obj1);
+                    myJsonReader.jsonWriteFileInternal(MqttSettingsActivity.this, "mqttCurrentSettings.json", obj2);
+
+                    // also modifies the profile in the databse
+                    profileRef.runTransaction(new Transaction.Handler() {
+                        @NonNull
                         @Override
-                        public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
-                        {
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            mutableData.child("HomeName").setValue(mHouseName);
+                            mutableData.child("MQTT").child("username").setValue(mMqttUsername);
+                            mutableData.child("MQTT").child("password").setValue(mMqttPassword);
+                            mutableData.child("MQTT").child("serverURI").setValue(mMqttServerURI);
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
                             // starts the main activity after the settings have been saved
+
                             Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
                             intent.putExtra("USERID", userID);
                             intent.putExtra("PROFILEKEY", profileKey);
@@ -160,35 +176,11 @@ public class MqttSettingsActivity extends AppCompatActivity {
                         }
                     });
 
-                        // also modifies the profile in the databse
-                        profileRef.runTransaction( new Transaction.Handler() {
-                            @NonNull
-                            @Override
-                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                                mutableData.child("HomeName").setValue(mHouseName);
-                                mutableData.child("MQTT").child("username").setValue(mMqttUsername);
-                                mutableData.child("MQTT").child("password").setValue(mMqttPassword);
-                                mutableData.child("MQTT").child("serverURI").setValue(mMqttServerURI);
-                                return Transaction.success(mutableData);
-                            }
-                            @Override
-                            public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
-                            {
-                                // starts the main activity after the settings have been saved
-
-                                Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
-                                intent.putExtra("USERID", userID);
-                                intent.putExtra("PROFILEKEY", profileKey);
-                                startActivity(intent);
-                            }
-                        });
-
                     // if the settings don't meet some requirements
-                    } else {
-                        mServer.setError("Your server address is missing : or is too short");
-                        focusView = mServer;
-                        focusView.requestFocus();
-                    }
+                } else {
+                    mServer.setError("Your server address is missing : or is too short");
+                    focusView = mServer;
+                    focusView.requestFocus();
                 }
             }
         });

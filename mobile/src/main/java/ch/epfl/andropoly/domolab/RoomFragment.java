@@ -9,10 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,12 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
-import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
-import static JsonUtilisties.myJsonReader.jsonObjFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonObjFromFileInternal;
-import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
-import static JsonUtilisties.myJsonReader.readDevicesRoom;
+import static ch.epfl.andropoly.domolab.Domolab.MyDevFile;
 
 public class RoomFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
@@ -84,7 +77,6 @@ public class RoomFragment extends Fragment {
     }
 
     public void setDeviceAdapter(){
-        JSONObject device_list;
         JSONArray device_list_room = new JSONArray();
         JSONObject all_device_obj = new JSONObject();
 
@@ -93,16 +85,7 @@ public class RoomFragment extends Fragment {
         list_state.clear();
 
         try {
-            all_device_obj = readDevicesRoom(getContext(), room_name);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if(mDeviceAdapter == null) {
-                device_list = jsonObjFromFileAsset(getActivity(), "testMyDevices.json");
-                jsonWriteFileInternal(getActivity(), "my_devices.json", device_list);
-            }
+            all_device_obj = jsonObjFromFileInternal(getContext(), MyDevFile).getJSONObject(room_name);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

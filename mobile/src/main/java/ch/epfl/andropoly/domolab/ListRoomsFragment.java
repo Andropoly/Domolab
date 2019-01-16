@@ -22,6 +22,7 @@ import java.util.List;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileAsset;
 import static JsonUtilisties.myJsonReader.jsonArrFromFileInternal;
 import static JsonUtilisties.myJsonReader.jsonWriteFileInternal;
+import static ch.epfl.andropoly.domolab.Domolab.MyRoomFile;
 
 public class ListRoomsFragment extends Fragment {
     private final String TAG = this.getClass().getSimpleName();
@@ -79,7 +80,7 @@ public class ListRoomsFragment extends Fragment {
         list_type.clear();
 
         try {
-                room_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
+            room_list = jsonArrFromFileInternal(getActivity(), MyRoomFile);
         }
         catch (IOException e) {
             e.printStackTrace();

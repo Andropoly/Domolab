@@ -50,7 +50,7 @@ public class Domolab extends Application {
     //JSON files related variables
     public static String MyRoomFile = "my_rooms.json";
     public static String MyFavFile = "my_favs.json";
-    public static String MyDevFile = "my_devs.json";
+    public static String MyDevFile = "my_devices.json";
     public static String savedCredentialsFile = "savedCredentials.json";
     public static String mqttSettingsFile = "mqttCurrentSettings.json";
     public static String MyHomenameFile = "currentHouse.json";
@@ -143,7 +143,11 @@ public class Domolab extends Application {
         JSONObject JSONHomeName_db = new JSONObject();
         try {
             JSONHomeName_db.put("HouseName", HomeName_db);
-            JSONArray JSONMqttSettings_db = new JSONArray(mqttSettings_db.toString());
+
+            JSONObject JSONMqttSettings_db = new JSONObject();
+            JSONMqttSettings_db.put("MQTTUsername", mqttSettings_db.get(0));
+            JSONMqttSettings_db.put("MQTTPassword", mqttSettings_db.get(1));
+            JSONMqttSettings_db.put("MQTTServer", mqttSettings_db.get(2));
 
             myJsonReader.jsonWriteFileInternal(getContext(), MyHomenameFile , JSONHomeName_db);
             myJsonReader.jsonWriteFileInternal(getContext(), MyRoomFile , roomsArray_db);

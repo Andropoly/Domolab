@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static ch.epfl.andropoly.domolab.Domolab.MyDevFile;
+
 public class myJsonReader {
     private static String stringFromFile(Context activityContext, String filename) throws IOException {
         InputStream is = activityContext.getAssets().open(filename);
@@ -191,7 +193,7 @@ public class myJsonReader {
          * Edit a device string value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {
@@ -210,7 +212,7 @@ public class myJsonReader {
          * Edit a device int value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
 
@@ -230,7 +232,7 @@ public class myJsonReader {
          * Edit a device float value in a particular room, name, and input type.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {
@@ -244,32 +246,13 @@ public class myJsonReader {
 
         jsonWriteFileInternal(context, filename, myDevices);
     }
-
-    public static JSONObject readDevicesRoom(Context context, String roomName) throws  JSONException {
-        /**
-         * Recover all devices of a given room
-         */
-
-        String filename = "my_devices.json";
-        JSONObject myDevices = null;
-
-        try {
-            myDevices = jsonObjFromFileInternal(context, filename);
-        } catch (IOException e) {
-            Log.e("EditDeviceValue", "The devices json file does not exist or we do not have the right to read it");
-            e.printStackTrace();
-        }
-
-        return myDevices.getJSONObject(roomName);
-    }
-
     public static void toggleDevices(Context context, String roomName, String deviceName
                                         ) throws JSONException {
         /**
          * Edit a toggle device value to toggle this device in a particular room, name,.
          */
 
-        String filename = "my_devices.json";
+        String filename = MyDevFile;
         JSONObject myDevices = null;
 
         try {
