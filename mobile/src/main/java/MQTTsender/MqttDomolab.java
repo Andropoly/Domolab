@@ -2,6 +2,7 @@ package MQTTsender;
 
 import android.content.Context;
 import android.nfc.Tag;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
+import JsonUtilisties.myJsonReader;
 import ch.epfl.andropoly.domolab.Domolab;
 import ch.epfl.andropoly.domolab.LoginActivity;
 
@@ -135,6 +137,8 @@ public class MqttDomolab{
                         try {
                             subscribeToTopic(mSubscriptionTopic);
                             sendMsgToTopic("An app is connected","status");
+                            Domolab.MqttChanged.setBoolean(!Domolab.MqttChanged.isBoolean());
+
                         } catch (NotConnectedException e) {
                             e.printStackTrace();
                         }
@@ -313,6 +317,53 @@ public class MqttDomolab{
             throw new NotConnectedException();
         }
 
+    }
+
+    public void setAllHouse(){
+
+        try {
+            subscribeToTopic("#");
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
+        mqttAndroidClient.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                String[] topicArr = topic.split("/");
+                switch (topicArr[0]){
+                    case "get":
+                        switch (topicArr[1]){
+                            case "allHouse":
+                                JSONObject obj = new JSONObject(message);
+                                String test = obj.toString();
+                                break;
+                        }
+                        break;
+
+                }
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+        try {
+            sendMsgToTopic("{\"allHouse\":\"coucou\"}}", "all/House");
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
     }
 }
 

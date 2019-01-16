@@ -80,14 +80,14 @@ public class Tes2Activity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                /*try {
+                try {
                     //obj.ge
                     mqttDomolab.sendJsonToTopic(obj.getJSONObject("Light"),"test");
                 } catch (NotConnectedException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }*/
+                }
                 //mqttDomolab.disconnect();
                 Intent intent = new Intent(Tes2Activity.this, TestActivity.class);
                 //intent.putExtra("mqttclient", mqttDomolab);

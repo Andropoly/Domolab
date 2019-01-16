@@ -5,6 +5,7 @@
   "Parents Bedroom":{
     "List":["Right light","Left light"],
     "Right light":{
+      "Type": "Light",
       "Inputs":{
         "Toggle":0,
         "Slider":50
@@ -14,6 +15,7 @@
       }
     },
     "Left light":{
+      "Type": "Light",
       "Inputs":{
         "Toggle":1,
         "Slider":100
