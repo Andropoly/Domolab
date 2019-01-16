@@ -26,7 +26,7 @@ public class Domolab extends Application {
     // mqtt private variables
     private static Domolab mContext;
     private static MqttDomolab mqttDomolab;
-    private static Boolean mqttCreated = false;
+    public static Boolean mqttCreated = false;
 
     // database private variables
     private static FirebaseDatabase database;

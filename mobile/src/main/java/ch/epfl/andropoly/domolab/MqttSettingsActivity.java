@@ -1,5 +1,6 @@
 package ch.epfl.andropoly.domolab;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.annotations.Nullable;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -118,14 +120,14 @@ public class MqttSettingsActivity extends AppCompatActivity {
                     if (isServerURIValid(mMqttServerURI)) {
 
                         if (Domolab.mqttIsCreated()){
-                            Domolab.getMqttDomolab().disconnect();
-
-                            try {
-                                Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
-                                Domolab.getMqttDomolab().connect();
-                            } catch (AlreadyConnectecException e) {
-                                e.printStackTrace();
+                            if (Domolab.getMqttDomolab().mqttAndroidClient.isConnected()){
+                                Domolab.getMqttDomolab().disconnect();
                             }
+                            //Domolab.getMqttDomolab().disconnect();
+                            //Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
+                            /*Domolab.getMqttDomolab().setServerUri(mMqttServerURI);
+                            Domolab.getMqttDomolab().setUsername(mMqttUsername);
+                            Domolab.getMqttDomolab().setPassword(mMqttPassword);*/
                         } else {
                             Domolab.creatMqtt( mMqttServerURI, mMqttUsername, mMqttPassword);
                             try {
@@ -168,10 +170,19 @@ public class MqttSettingsActivity extends AppCompatActivity {
                             {
                                 // starts the main activity after the settings have been saved
 
-                                Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
-                                intent.putExtra("USERID", userID);
-                                intent.putExtra("PROFILEKEY", profileKey);
-                                startActivity(intent);
+                                if(callingActivity == "LoginActivity") {
+                                    Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
+                                    intent.putExtra("USERID", userID);
+                                    intent.putExtra("PROFILEKEY", profileKey);
+                                    startActivity(intent);
+                                } else{
+                                    Intent intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
+                                }
+
+
+
                             }
                         });
 
@@ -193,11 +204,13 @@ public class MqttSettingsActivity extends AppCompatActivity {
                 // starts the activity that called this activity
                 if(callingActivity == "LoginActivity") {
                     intent = new Intent(MqttSettingsActivity.this, LoginActivity.class);
+                    startActivity(intent);
                 }
                 else {
                     intent = new Intent(MqttSettingsActivity.this, HomeActivity.class);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                 }
-                startActivity(intent);
             }
         });
     }

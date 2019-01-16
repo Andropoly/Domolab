@@ -115,14 +115,13 @@ public class MqttDomolab{
             mqttConnectOptions.setPassword(mPassword.toCharArray());
         }
 
-        Boolean a = mqttAndroidClient.isConnected();
+        //Boolean a = mqttAndroidClient.isConnected();
 
 
-        if (mqttAndroidClient.isConnected()){
+        if (false){
             throw new AlreadyConnectecException();
         } else {
             try {
-
                 mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
@@ -137,7 +136,7 @@ public class MqttDomolab{
                         try {
                             subscribeToTopic(mSubscriptionTopic);
                             sendMsgToTopic("An app is connected","status");
-                            Domolab.MqttChanged.setBoolean(!Domolab.MqttChanged.isBoolean());
+                            Domolab.MqttChanged.setBoolean(true);
 
                         } catch (NotConnectedException e) {
                             e.printStackTrace();
@@ -162,6 +161,7 @@ public class MqttDomolab{
             mqttAndroidClient.disconnect(null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
+                    Domolab.MqttChanged.setBoolean(false);
                 }
 
                 @Override
@@ -344,7 +344,7 @@ public class MqttDomolab{
                     case "get":
                         switch (topicArr[1]){
                             case "allHouse":
-                                JSONObject obj = new JSONObject(message);
+                                JSONObject obj = new JSONObject(message.toString());
                                 String test = obj.toString();
                                 break;
                         }

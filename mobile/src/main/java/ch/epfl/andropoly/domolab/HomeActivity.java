@@ -75,7 +75,19 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
         Domolab.MqttChanged.setListener(new BooleanVariable.ChangeListener() {
             @Override
             public void onChange() {
-                mqttDomolab.setAllHouse();
+                if (Domolab.MqttChanged.isBoolean()){
+                    mqttDomolab.setAllHouse();
+                } else {
+                    Domolab.creatMqtt(mServerAddr, mUsername, mPwd);
+                    mqttDomolab = Domolab.getMqttDomolab();
+                    try {
+                        mqttDomolab.connect();
+                    } catch (AlreadyConnectecException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
             }
         });
 
@@ -183,7 +195,10 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SETTINGS) {
-            // do nothing
+            mqttDomolab.disconnect();
+            //mqttDomolab = Domolab.getMqttDomolab();
+            //mqttDomolab.connect();
+
         }
     }
 
