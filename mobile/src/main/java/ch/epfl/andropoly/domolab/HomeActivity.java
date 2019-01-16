@@ -30,20 +30,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import JsonUtilisties.myJsonReader;
+import MQTTsender.AlreadyConnectecException;
+import MQTTsender.MqttDomolab;
+import MQTTsender.NotConnectedException;
 
 public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.PopupAddingRoomListener, PopupEditRoom.PopupEditRoomListener {
     private final String TAG = this.getClass().getSimpleName();
 
     private final int SETTINGS = 1;
-
-    private List<String> list_rooms = Arrays.asList(
-            "Kitchen","Room","Restroom","Living room","Kitchen","Room","Restroom","Living room"
-    );
-
-    private List<String> list_fav = Arrays.asList(
-            "Kitchen","Restroom","Restroom","Restroom"
-    );
-
     // Databse variable
     private String userID;
     private String profileKey;
@@ -64,6 +58,12 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
     private String favsString_db;
     private JSONArray roomsArray_db;
     private JSONArray favsArray_db;
+
+    MqttDomolab mqttDomolab;
+
+    private String mUsername = "ywcheuja";
+    private String mPwd = "XD9nWtB5CRKl";
+    private String mServerAddr = "tcp://m21.cloudmqtt.com:16233";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +120,33 @@ public class HomeActivity extends AppCompatActivity implements PopupAddingRoom.P
                     // Empty
                 }
             });
+        }
+        if (Domolab.mqttIsCreated()){
+            mqttDomolab = Domolab.getMqttDomolab();
+        } else {
+            try {
+
+                JSONObject obj = myJsonReader.jsonObjFromFileInternal(HomeActivity.this, "mqttCurrentSettings.json");
+                mServerAddr = obj.getString("MQTTServer");
+                mUsername = obj.getString("MQTTUsername");
+                mPwd = obj.getString("MQTTPassword");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                Toast.makeText(HomeActivity.this, "Not MQTT settings", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+            Domolab.creatMqtt(mUsername, mPwd, mServerAddr);
+            mqttDomolab = Domolab.getMqttDomolab();
+            try {
+                mqttDomolab.connect();
+                mqttDomolab.sendMsgToTopic("An app is connected", "status");
+            } catch (AlreadyConnectecException e) {
+                Toast.makeText(HomeActivity.this, "Couldn't connect to MQTT", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            } catch (NotConnectedException e) {
+                e.printStackTrace();
+            }
         }
 
     }

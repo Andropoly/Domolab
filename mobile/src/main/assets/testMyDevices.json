@@ -3,6 +3,7 @@
 
   },
   "Parents Bedroom":{
+    "List":["Right light","Left light"],
     "Right light":{
       "Inputs":{
         "Toggle":0,

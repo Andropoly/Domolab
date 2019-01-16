@@ -79,10 +79,6 @@ public class ListRoomsFragment extends Fragment {
         list_type.clear();
 
         try {
-            if(mRoomAdapter == null) {
-                room_list = jsonArrFromFileAsset(getActivity(), "testRoom.json");
-                jsonWriteFileInternal(getActivity(), "my_rooms.json", room_list);
-            } else
                 room_list = jsonArrFromFileInternal(getActivity(), "my_rooms.json");
         } catch (IOException e) {
             e.printStackTrace();
