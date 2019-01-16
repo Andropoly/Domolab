@@ -2,10 +2,18 @@ package MQTTsender;
 
 import android.content.Context;
 import android.nfc.Tag;
+import android.support.annotation.NonNull;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.animation.BounceInterpolator;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.annotations.Nullable;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -345,8 +353,22 @@ public class MqttDomolab{
                     case "get":
                         switch (topicArr[1]){
                             case "allHouse":
-                                JSONObject obj = new JSONObject(message.toString());
-                                String test = obj.toString();
+                                final JSONObject obj = new JSONObject(message.toString());
+                                //TODO: add obj to firebase
+                                DatabaseReference profileRef = Domolab.getprofileRef();
+                                profileRef.runTransaction( new Transaction.Handler() {
+                                    @NonNull
+                                    @Override
+                                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+
+                                        mutableData.child("Devices").setValue(obj.toString());
+                                        return Transaction.success(mutableData);
+                                    }
+                                    @Override
+                                    public void onComplete (@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot)
+                                    {
+                                    }
+                                });
                                 break;
                         }
                         break;
@@ -361,7 +383,7 @@ public class MqttDomolab{
             }
         });
         try {
-            sendMsgToTopic("{\"allHouse\":\"coucou\"}}", "all/House");
+            sendMsgToTopic("{\"allHouse\":\"start\"}}", "all/House");
         } catch (NotConnectedException e) {
             e.printStackTrace();
         }
