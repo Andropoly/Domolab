@@ -143,7 +143,6 @@ public class Domolab extends Application {
         JSONObject JSONHomeName_db = new JSONObject();
         try {
             JSONHomeName_db.put("HouseName", HomeName_db);
-
             JSONObject JSONMqttSettings_db = new JSONObject();
             JSONMqttSettings_db.put("MQTTUsername", mqttSettings_db.get(0));
             JSONMqttSettings_db.put("MQTTPassword", mqttSettings_db.get(1));
