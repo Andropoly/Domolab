@@ -120,5 +120,6 @@ public class ListRoomsFragment extends Fragment {
 
     public void updateAdapter(){
         setRoomAdapter();
+        ItemAdapter.updateDatabase(getActivity(), this.getResources().getString(R.string.add_room));
     }
 }

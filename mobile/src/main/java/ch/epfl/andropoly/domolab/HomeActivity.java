@@ -85,7 +85,7 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
                     Log.d(TAG, "Favs info are contained in " + Domolab.favsArray_db);
 
                     setFragments();
-
+                    Domolab.DatabaseChanged.delListener();
                 }
             });
         }

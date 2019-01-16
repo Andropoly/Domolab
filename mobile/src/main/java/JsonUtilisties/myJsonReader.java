@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ch.epfl.andropoly.domolab.Domolab;
+
 import static ch.epfl.andropoly.domolab.Domolab.MyDevFile;
 
 public class myJsonReader {
@@ -145,6 +147,8 @@ public class myJsonReader {
             }
         }
 
+        // Update database global variable
+        Domolab.roomsArray_db = room_list;
         jsonWriteFileInternal(context, filename, room_list);
     }
 
@@ -183,9 +187,32 @@ public class myJsonReader {
             }
         }
 
+        // Update database global variable
+        Domolab.roomsArray_db = room_list;
+        if(!btn_room_name.equals(value_name))
+            updateDeviceRoomName(btn_room_name, value_name);
+
         jsonWriteFileInternal(context, filename, room_list);
     }
 
+    static private void updateDeviceRoomName(String btn_room_name, String value_name){
+        JSONObject room_new_name_obj = new JSONObject();
+
+        try {
+            room_new_name_obj = Domolab.devicesObject_db.getJSONObject(btn_room_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Domolab.devicesObject_db.put(value_name, room_new_name_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Update database global variable
+        Domolab.devicesObject_db.remove(btn_room_name);
+    }
 
     public static void editInputDevices(Context context, String roomName, String deviceName,
                                 String inputType, String value) throws  JSONException {
@@ -246,7 +273,7 @@ public class myJsonReader {
 
         jsonWriteFileInternal(context, filename, myDevices);
     }
-    public static void toggleDevices(Context context, String roomName, String deviceName
+    public static JSONObject toggleDevices(Context context, String roomName, String deviceName
                                         ) throws JSONException {
         /**
          * Edit a toggle device value to toggle this device in a particular room, name,.
@@ -269,6 +296,7 @@ public class myJsonReader {
         }
 
         jsonWriteFileInternal(context, filename, myDevices);
+        return myDevices;
     }
 
 

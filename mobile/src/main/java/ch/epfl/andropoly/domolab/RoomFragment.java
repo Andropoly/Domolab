@@ -127,7 +127,7 @@ public class RoomFragment extends Fragment {
             }
         }
 
-        mDeviceAdapter = new DeviceAdapter(list_name, list_type, list_state);
+        mDeviceAdapter = new DeviceAdapter(list_name, list_type, list_state, room_name);
     }
 
     public void updateAdapter(){

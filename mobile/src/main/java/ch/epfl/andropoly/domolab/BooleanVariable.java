@@ -21,6 +21,10 @@ public class BooleanVariable {
         this.listener = listener;
     }
 
+    public void delListener() {
+        this.listener = null;
+    }
+
     public interface ChangeListener {
         void onChange();
     }
