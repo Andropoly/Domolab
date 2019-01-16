@@ -197,9 +197,14 @@ public class HomeActivity extends AppCompatActivity implements DialogAddRoom.Dia
     }
 
     public void allOffCallback(View view) {
+        if(Domolab.getMqttDomolab() != null){
+            try {
+                mqttDomolab.sendMsgToTopic("{\"Alert\":\"allOff\"}", "all/House");
+            } catch (NotConnectedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        Intent intent = new Intent(HomeActivity.this, Tes2Activity.class);
-        startActivity(intent);
     }
 
     @Override
