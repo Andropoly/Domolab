@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".HomeActivity"
-    tools:ignore="MissingDefaultResource">
+    tools:ignore="MissingDefaultResource"
+    tools:layout_weight="1">
 
     <TextView
         android:id="@+id/txt_favorites_title"
@@ -15,10 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacer"
         android:layout_marginLeft="@dimen/spacer"
-        android:layout_marginTop="@dimen/spacer"
         android:layout_marginEnd="@dimen/spacer"
         android:layout_marginRight="@dimen/spacer"
-        android:layout_marginBottom="@dimen/spacer"
         android:text="@string/home_favorites"
         android:textSize="@dimen/txt_title"
         android:textStyle="bold" />
@@ -31,7 +30,6 @@
         android:layout_marginLeft="@dimen/spacer"
         android:layout_marginEnd="@dimen/spacer"
         android:layout_marginRight="@dimen/spacer"
-        android:layout_marginBottom="@dimen/spacer"
         android:layout_weight="1"
         android:orientation="horizontal" >
 
