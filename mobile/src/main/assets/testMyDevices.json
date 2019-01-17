@@ -1,10 +1,75 @@
 {
-  "Kitchen":{
+  "MyKitchen":{
+    "List":["Heater","Light","Fan"],
+    "Heater":{
+      "Type": "Radiator",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    },
+    "Light":{
+      "Type": "Light",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    },
+    "Fan":{
+      "Type": "Light",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    }
 
   },
-  "Parents Bedroom":{
-    "List":["Right light","Left light"],
-    "Right light":{
+  "MyBedroom":{
+    "List":["Heater","Light","Fan"],
+    "Heater":{
+      "Type": "Radiator",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    },
+    "Light":{
+      "Type": "Light",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    },
+    "Fan":{
+      "Type": "Light",
+      "Inputs":{
+        "Toggle":0,
+        "Slider":20
+      },
+      "Outputs":{
+
+      }
+    }
+
+  },
+  "Parents_Bedroom":{
+    "List":["Right_light","Left_light"],
+    "Right_light":{
       "Type": "Light",
       "Inputs":{
         "Toggle":0,
@@ -14,7 +79,7 @@
 
       }
     },
-    "Left light":{
+    "Left_light":{
       "Type": "Light",
       "Inputs":{
         "Toggle":1,

@@ -388,7 +388,7 @@ public class MqttDomolab{
             }
         });
         try {
-            sendMsgToTopic("{\"allHouse\":\"start\"}}", "all/House");
+            sendMsgToTopic("{\"allHouse\":\"start\"}", "all/House");
         } catch (NotConnectedException e) {
             e.printStackTrace();
         }
